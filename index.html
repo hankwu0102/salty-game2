@@ -5,129 +5,92 @@
 <title>鹽分實驗室</title>
 <style>
 body {
-background: #000;
-color: #0ff;
-font-family: 'Consolas', monospace;
-margin: 0;
-padding: 20px;
-min-height: 100vh;
-display: flex;
-flex-direction: column;
-align-items: center;
+  background: #000;
+  color: #0ff;
+  font-family: 'Consolas', monospace;
+  margin: 0;
+  padding: 20px;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
-
 .game-title {
-font-size: 2.5em;
-margin-bottom: 10px;
-color: #0ff;
+  font-size: 2.5em;
+  margin-bottom: 10px;
+  color: #0ff;
 }
-
 .neon-btn, .upgrade .neon-btn {
-background: #001a00;
-border: 2px solid #0f0;
-color: #0f0;
-box-shadow: 0 0 10px #0f0, 0 0 20px #0f08;
-transition: all 0.2s, box-shadow 0.4s;
-animation: neon-glow 1.5s infinite alternate;
+  background: #001a1a;
+  border: 2px solid #0ff;
+  color: #0ff;
+  box-shadow: none;
+  transition: none;
+  animation: none;
 }
-
 .neon-btn:hover:not(:disabled) {
-background: rgba(0, 255, 255, 0.1);
+  background: rgba(0, 255, 255, 0.1);
 }
-
 .neon-btn:disabled {
-opacity: 0.5;
-cursor: not-allowed;
-border-color: #444;
+  opacity: 0.5;
+  cursor: not-allowed;
+  border-color: #444;
 }
-
 .neon-btn:active {
-box-shadow: 0 0 20px #0f0, 0 0 40px #0f08;
+  box-shadow: none;
 }
-
-@keyframes neon-glow {
-from { box-shadow: 0 0 10px #0f0, 0 0 20px #0f08; }
-to   { box-shadow: 0 0 20px #0f0, 0 0 40px #0f08; }
-}
-
 .display {
-background: rgba(0, 0, 0, 0.5);
-border: 1px solid #0ff;
-padding: 15px;
-margin-bottom: 20px;
+  background: rgba(0, 0, 0, 0.5);
+  border: 1px solid #0ff;
+  padding: 15px;
+  margin-bottom: 20px;
 }
-
 .upgrade .neon-btn {
-text-align: left;
-padding: 10px;
-margin: 5px 0;
-width: 100%;
+  text-align: left;
+  padding: 10px;
+  margin: 5px 0;
+  width: 100%;
 }
-
 .cooldown-container {
-position: relative;
-display: inline-block;
-margin: 10px 0;
+  position: relative;
+  display: inline-block;
+  margin: 10px 0;
 }
-
 .cooldown-ring {
-width: 60px;
-height: 60px;
-position: relative;
+  width: 60px;
+  height: 60px;
+  position: relative;
 }
-
 .cooldown-ring svg {
-transform: rotate(-90deg);
+  transform: rotate(-90deg);
 }
-
 .cooldown-ring circle {
-fill: none;
-stroke-width: 4;
+  fill: none;
+  stroke-width: 4;
 }
-
 .cooldown-ring .background {
-stroke: rgba(0, 255, 255, 0.2);
+  stroke: rgba(0, 255, 255, 0.2);
 }
-
 .cooldown-ring .progress {
-stroke: #0f0;
-stroke-linecap: round;
-transition: stroke-dashoffset 0.1s linear;
+  stroke: #0ff;
+  stroke-linecap: round;
+  transition: stroke-dashoffset 0.1s linear;
 }
-
 .cooldown-text {
-position: absolute;
-top: 50%;
-left: 50%;
-transform: translate(-50%, -50%);
-font-size: 0.9em;
-color: #0f0;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 0.9em;
+  color: #0ff;
 }
-
 .version {
-position: fixed;
-bottom: 10px;
-right: 10px;
-color: #0f0;
-font-size: 0.8em;
-opacity: 0.7;
-}
-
-.salt-particle {
-position: fixed;
-width: 12px;
-height: 12px;
-border-radius: 50%;
-pointer-events: none;
-z-index: 9999;
-background: #0f0;
-opacity: 0.8;
-animation: salt-pop 1s linear;
-}
-@keyframes salt-pop {
-0% { transform: scale(0.7); opacity: 1; }
-80% { transform: scale(1.2); opacity: 0.7; }
-100% { transform: scale(1.5); opacity: 0; }
+  position: fixed;
+  bottom: 10px;
+  right: 10px;
+  color: #0ff;
+  font-size: 0.8em;
+  opacity: 0.7;
 }
 </style>
 </head>
@@ -150,7 +113,6 @@ data-zh="實驗數據" data-en="Experiment Data">實驗數據</div>
 <span id="research">0</span>%
 </div>
 </div>
-
 <div class="upgrade">
 <div class="cooldown-container">
 <button class="neon-btn" id="addSaltBtn">
@@ -159,13 +121,12 @@ data-zh="實驗數據" data-en="Experiment Data">實驗數據</div>
 <div class="cooldown-ring">
 <svg width="60" height="60">
 <circle class="background" cx="30" cy="30" r="27" fill="none" stroke="rgba(0, 255, 255, 0.2)" stroke-width="4"/>
-<circle class="progress" cx="30" cy="30" r="27" fill="none" stroke="#0f0" stroke-width="4" stroke-dasharray="169.6" stroke-dashoffset="0"/>
+<circle class="progress" cx="30" cy="30" r="27" fill="none" stroke="#0ff" stroke-width="4" stroke-dasharray="169.6" stroke-dashoffset="0"/>
 </svg>
 <div class="cooldown-text" id="cooldownText">1000ms</div>
 </div>
 </div>
 </div>
-
 <div class="upgrade">
 <button class="neon-btn" id="naturalErosionBtn">
 <span data-zh="自然侵蝕" data-en="Natural Erosion">自然侵蝕</span>
@@ -181,7 +142,6 @@ data-zh="實驗數據" data-en="Experiment Data">實驗數據</div>
 <span id="naturalErosionLv">0</span>
 </div>
 </div>
-
 <div class="upgrade">
 <button class="neon-btn" id="evaporationBtn">
 <span data-zh="蒸發" data-en="Evaporation">蒸發</span>
@@ -197,7 +157,6 @@ data-zh="實驗數據" data-en="Experiment Data">實驗數據</div>
 <span id="evaporationLv">0</span>
 </div>
 </div>
-
 <div class="upgrade">
 <button class="neon-btn" id="fasterLaborBtn">
 <span data-zh="加速勞動" data-en="Faster Labor">加速勞動</span>
@@ -213,7 +172,6 @@ data-zh="實驗數據" data-en="Experiment Data">實驗數據</div>
 <span id="fasterLaborLv">0</span>
 </div>
 </div>
-
 <div class="upgrade">
 <button class="neon-btn" id="autoDissolveBtn">
 <span data-zh="自動溶解" data-en="Auto Dissolve">自動溶解</span>
@@ -229,7 +187,6 @@ data-zh="實驗數據" data-en="Experiment Data">實驗數據</div>
 <span id="autoDissolveLv">0</span>
 </div>
 </div>
-
 <div class="upgrade">
 <h2 style="margin-top:32px;" data-zh="研究進階" data-en="Research Progress">研究進階</h2>
 <div class="prestige-info">
@@ -266,9 +223,7 @@ data-en="Upgrade names by you_3009">
 升級名稱由 you_3009 提供
 </div>
 </div>
-
 <div class="footer">© 2024 鹽分實驗室 | 科學放置遊戲</div>
-<div class="animation-container" id="animationContainer"></div>
 <div class="version">v1.8R-4k</div>
 <script>
 let saltPpm = 0;
@@ -301,17 +256,6 @@ function updateLanguage() {
     currentLang === 'zh' ? 'English' : '中文';
 }
 
-function createSaltParticle(x, y) {
-  const particle = document.createElement('div');
-  particle.className = 'salt-particle';
-  particle.style.left = x + 'px';
-  particle.style.top = y + 'px';
-  particle.style.background = '#0f0';
-  particle.style.boxShadow = '0 0 10px #0f0, 0 0 20px #0f08';
-  document.body.appendChild(particle);
-  setTimeout(() => particle.remove(), 1000);
-}
-
 document.getElementById('addSaltBtn').addEventListener('click', function(e) {
   const now = Date.now();
   if (now - lastClickTime >= clickCooldown) {
@@ -321,7 +265,6 @@ document.getElementById('addSaltBtn').addEventListener('click', function(e) {
     const addedSalt = baseSalt * prestigeMultiplier * naturalErosionMultiplier;
     saltPpm += addedSalt;
     lastClickTime = now;
-    createSaltParticle(e.clientX, e.clientY);
     updateDisplay();
     updateCooldown();
   }
@@ -391,15 +334,6 @@ function updateUpgradeButtons() {
   document.getElementById('autoDissolveLv').textContent = autoDissolveLv;
 }
 
-function animateButton(btn) {
-  btn.style.transform = 'scale(1.1)';
-  btn.style.boxShadow = '0 0 30px #0f0, 0 0 60px #0f08';
-  setTimeout(() => {
-    btn.style.transform = '';
-    btn.style.boxShadow = '';
-  }, 180);
-}
-
 function handleUpgrade(buttonId, levelVar, costMultiplier = 1) {
   const currentCost = 0.001 * Math.pow(1.5, window[levelVar]) * costMultiplier;
   if (saltPpm >= currentCost) {
@@ -407,7 +341,6 @@ function handleUpgrade(buttonId, levelVar, costMultiplier = 1) {
     window[levelVar]++;
     updateDisplay();
     updateUpgradeButtons();
-    animateButton(document.getElementById(buttonId));
   }
 }
 
