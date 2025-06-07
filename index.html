@@ -3,11 +3,13 @@
 <head>
 <meta charset="UTF-8">
 <title>鹽分實驗室</title>
+<!-- Orbitron 字型 -->
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700&display=swap" rel="stylesheet">
 <style>
 body {
   background: #000;
   color: #0ff;
-  font-family: 'Consolas', monospace;
+  font-family: 'Orbitron', 'Consolas', monospace;
   margin: 0;
   padding: 20px;
   min-height: 100vh;
@@ -97,135 +99,132 @@ body {
 <body>
 <button class="neon-btn language-switch" id="langSwitch">English</button>
 <div class="container">
-<div class="game-title" data-zh="鹽分實驗室" data-en="Salt Laboratory">鹽分實驗室</div>
-<div class="game-desc" data-zh="你是一位鹽分研究員，正在研究不同鹽類在水中的溶解度..." data-en="You are a salt researcher studying the solubility of different salts in water...">你是一位鹽分研究員，正在研究不同鹽類在水中的溶解度...</div>
-<div class="display">
-<div id="energy" style="margin-bottom:0;font-size:2.2em;font-weight:bold;"
-data-zh="實驗數據" data-en="Experiment Data">實驗數據</div>
-<div id="currency-row" style="margin-bottom:20px;">
-<span class="neon-green" data-zh="鹽分濃度：" data-en="Salt Concentration: ">鹽分濃度：</span>
-<span id="saltPpm">0</span> mg/L |
-<span class="neon-green" data-zh="剩餘水量：" data-en="Water Volume: ">剩餘水量：</span>
-<span id="waterVolume">1000</span> L |
-<span class="neon-red" data-zh="實驗點數：" data-en="Experiment Points: ">實驗點數：</span>
-<span id="expPoints">0</span> |
-<span class="neon-soul" data-zh="研究進度：" data-en="Research Progress: ">研究進度：</span>
-<span id="research">0</span>%
-</div>
-</div>
-<div class="upgrade">
-<div class="cooldown-container">
-<button class="neon-btn" id="addSaltBtn">
-<span data-zh="添加鹽分" data-en="Add Salt">添加鹽分</span>
-</button>
-<div class="cooldown-ring">
-<svg width="60" height="60">
-<circle class="background" cx="30" cy="30" r="27" fill="none" stroke="rgba(0, 255, 255, 0.2)" stroke-width="4"/>
-<circle class="progress" cx="30" cy="30" r="27" fill="none" stroke="#0ff" stroke-width="4" stroke-dasharray="169.6" stroke-dashoffset="0"/>
-</svg>
-<div class="cooldown-text" id="cooldownText">1000ms</div>
-</div>
-</div>
-</div>
-<div class="upgrade">
-<button class="neon-btn" id="naturalErosionBtn">
-<span data-zh="自然侵蝕" data-en="Natural Erosion">自然侵蝕</span>
-<br>
-<span data-zh="花費：" data-en="Cost: ">花費：</span><span class="upgrade-cost">1</span> mg/L<br>
-<span data-zh="效果：" data-en="Effect: ">效果：</span>
-<span data-zh="每次點擊額外增加" data-en="Add extra">每次點擊額外增加</span>
-<span class="upgrade-effect">1.0</span>x
-<span data-zh="鹽分" data-en="salt">鹽分</span>
-</button>
-<div class="desc">
-<span data-zh="當前等級：" data-en="Current Level: ">當前等級：</span>
-<span id="naturalErosionLv">0</span>
-</div>
-</div>
-<div class="upgrade">
-<button class="neon-btn" id="evaporationBtn">
-<span data-zh="蒸發" data-en="Evaporation">蒸發</span>
-<br>
-<span data-zh="花費：" data-en="Cost: ">花費：</span><span class="upgrade-cost">1</span> mg/L<br>
-<span data-zh="效果：" data-en="Effect: ">效果：</span>
-<span data-zh="每次點擊減少" data-en="Reduce">每次點擊減少</span>
-<span class="upgrade-effect">1.0</span>L
-<span data-zh="水量" data-en="water">水量</span>
-</button>
-<div class="desc">
-<span data-zh="當前等級：" data-en="Current Level: ">當前等級：</span>
-<span id="evaporationLv">0</span>
-</div>
-</div>
-<div class="upgrade">
-<button class="neon-btn" id="fasterLaborBtn">
-<span data-zh="加速勞動" data-en="Faster Labor">加速勞動</span>
-<br>
-<span data-zh="花費：" data-en="Cost: ">花費：</span><span class="upgrade-cost">1</span> mg/L<br>
-<span data-zh="效果：" data-en="Effect: ">效果：</span>
-<span data-zh="減少" data-en="Reduce">減少</span>
-<span class="upgrade-effect">1000</span>ms
-<span data-zh="冷卻時間" data-en="cooldown">冷卻時間</span>
-</button>
-<div class="desc">
-<span data-zh="當前等級：" data-en="Current Level: ">當前等級：</span>
-<span id="fasterLaborLv">0</span>
-</div>
-</div>
-<div class="upgrade">
-<button class="neon-btn" id="autoDissolveBtn">
-<span data-zh="自動溶解" data-en="Auto Dissolve">自動溶解</span>
-<br>
-<span data-zh="花費：" data-en="Cost: ">花費：</span><span class="upgrade-cost">1</span> mg/L<br>
-<span data-zh="效果：" data-en="Effect: ">效果：</span>
-<span data-zh="每秒自動添加" data-en="Auto add">每秒自動添加</span>
-<span class="upgrade-effect">0.0</span>/s
-<span data-zh="鹽分" data-en="salt">鹽分</span>
-</button>
-<div class="desc">
-<span data-zh="當前等級：" data-en="Current Level: ">當前等級：</span>
-<span id="autoDissolveLv">0</span>
-</div>
-</div>
-<div class="upgrade">
-<h2 style="margin-top:32px;" data-zh="研究進階" data-en="Research Progress">研究進階</h2>
-<div class="prestige-info">
-<div>
-<span data-zh="當前研究：" data-en="Current Research: ">當前研究：</span>
-<span id="currentResearch" class="neon-soul">鹽</span>
-</div>
-<div>
-<span data-zh="當前倍率：" data-en="Current Multiplier: ">當前倍率：</span>
-<span id="resetMultiplier" class="neon-soul">1.0</span>x
-</div>
-<div>
-<span data-zh="下次研究：" data-en="Next Research: ">下次研究：</span>
-<span id="nextResearch" class="neon-green">糖</span>
-</div>
-<div class="prestige-requirement">
-<span data-zh="需要達到：" data-en="Requires: ">需要達到：</span>
-<span id="resetRequirement">1000</span> mg/L
-</div>
-<div>
-<span data-zh="重置後獲得：" data-en="After reset: ">重置後獲得：</span>
-<span id="nextMultiplier" class="neon-soul">1.5</span>x
-<span data-zh="倍率" data-en="multiplier">倍率</span>
-</div>
-</div>
-<button class="neon-btn" id="resetBtn"
-data-zh="重置研究"
-data-en="Reset Research">
-重置研究
-</button>
-</div>
-<div class="credits" data-zh="升級名稱由 you_3009 提供"
-data-en="Upgrade names by you_3009">
-升級名稱由 you_3009 提供
-</div>
+  <div class="game-title" data-zh="鹽分實驗室" data-en="Salt Laboratory">鹽分實驗室</div>
+  <div class="game-desc" data-zh="你是一位鹽分研究員，正在研究不同鹽類在水中的溶解度..." data-en="You are a salt researcher studying the solubility of different salts in water...">你是一位鹽分研究員，正在研究不同鹽類在水中的溶解度...</div>
+  <div class="display">
+    <div id="energy" style="margin-bottom:0;font-size:2.2em;font-weight:bold;"
+      data-zh="實驗數據" data-en="Experiment Data">實驗數據</div>
+    <div id="currency-row" style="margin-bottom:20px;">
+      <span data-zh="鹽分濃度：" data-en="Salt Concentration: ">鹽分濃度：</span>
+      <span id="saltPpm">0</span> mg/L |
+      <span data-zh="剩餘水量：" data-en="Water Volume: ">剩餘水量：</span>
+      <span id="waterVolume">1000</span> L |
+      <span data-zh="實驗點數：" data-en="Experiment Points: ">實驗點數：</span>
+      <span id="expPoints">0</span> |
+      <span data-zh="研究進度：" data-en="Research Progress: ">研究進度：</span>
+      <span id="research">0</span>%
+    </div>
+  </div>
+  <div class="upgrade">
+    <div class="cooldown-container">
+      <button class="neon-btn" id="addSaltBtn">
+        <span data-zh="添加鹽分" data-en="Add Salt">添加鹽分</span>
+      </button>
+      <div class="cooldown-ring">
+        <svg width="60" height="60">
+          <circle class="background" cx="30" cy="30" r="27" fill="none" stroke="rgba(0, 255, 255, 0.2)" stroke-width="4"/>
+          <circle class="progress" cx="30" cy="30" r="27" fill="none" stroke="#0ff" stroke-width="4" stroke-dasharray="169.6" stroke-dashoffset="0"/>
+        </svg>
+        <div class="cooldown-text" id="cooldownText">1000ms</div>
+      </div>
+    </div>
+  </div>
+  <div class="upgrade">
+    <button class="neon-btn" id="naturalErosionBtn">
+      <span data-zh="自然侵蝕" data-en="Natural Erosion">自然侵蝕</span>
+      <br>
+      <span data-zh="花費：" data-en="Cost: ">花費：</span><span class="upgrade-cost" id="naturalErosionCost">0.001</span> mg/L<br>
+      <span data-zh="效果：" data-en="Effect: ">效果：</span>
+      <span data-zh="每次點擊額外增加" data-en="Add extra">每次點擊額外增加</span>
+      <span class="upgrade-effect" id="naturalErosionEffect">1.0</span>x
+      <span data-zh="鹽分" data-en="salt">鹽分</span>
+    </button>
+    <div class="desc">
+      <span data-zh="當前等級：" data-en="Current Level: ">當前等級：</span>
+      <span id="naturalErosionLv">0</span>
+    </div>
+  </div>
+  <div class="upgrade">
+    <button class="neon-btn" id="evaporationBtn">
+      <span data-zh="蒸發" data-en="Evaporation">蒸發</span>
+      <br>
+      <span data-zh="花費：" data-en="Cost: ">花費：</span><span class="upgrade-cost" id="evaporationCost">0.001</span> mg/L<br>
+      <span data-zh="效果：" data-en="Effect: ">效果：</span>
+      <span data-zh="每次點擊減少" data-en="Reduce">每次點擊減少</span>
+      <span class="upgrade-effect" id="evaporationEffect">1.0</span>L
+      <span data-zh="水量" data-en="water">水量</span>
+    </button>
+    <div class="desc">
+      <span data-zh="當前等級：" data-en="Current Level: ">當前等級：</span>
+      <span id="evaporationLv">0</span>
+    </div>
+  </div>
+  <div class="upgrade">
+    <button class="neon-btn" id="fasterLaborBtn">
+      <span data-zh="加速勞動" data-en="Faster Labor">加速勞動</span>
+      <br>
+      <span data-zh="花費：" data-en="Cost: ">花費：</span><span class="upgrade-cost" id="fasterLaborCost">0.001</span> mg/L<br>
+      <span data-zh="效果：" data-en="Effect: ">效果：</span>
+      <span data-zh="減少" data-en="Reduce">減少</span>
+      <span class="upgrade-effect" id="fasterLaborEffect">1000</span>ms
+      <span data-zh="冷卻時間" data-en="cooldown">冷卻時間</span>
+    </button>
+    <div class="desc">
+      <span data-zh="當前等級：" data-en="Current Level: ">當前等級：</span>
+      <span id="fasterLaborLv">0</span>
+    </div>
+  </div>
+  <div class="upgrade">
+    <button class="neon-btn" id="autoDissolveBtn">
+      <span data-zh="自動溶解" data-en="Auto Dissolve">自動溶解</span>
+      <br>
+      <span data-zh="花費：" data-en="Cost: ">花費：</span><span class="upgrade-cost" id="autoDissolveCost">0.001</span> mg/L<br>
+      <span data-zh="效果：" data-en="Effect: ">效果：</span>
+      <span data-zh="每秒自動添加" data-en="Auto add">每秒自動添加</span>
+      <span class="upgrade-effect" id="autoDissolveEffect">0.0</span>/s
+      <span data-zh="鹽分" data-en="salt">鹽分</span>
+    </button>
+    <div class="desc">
+      <span data-zh="當前等級：" data-en="Current Level: ">當前等級：</span>
+      <span id="autoDissolveLv">0</span>
+    </div>
+  </div>
+  <div class="upgrade">
+    <h2 style="margin-top:32px;" data-zh="研究進階" data-en="Research Progress">研究進階</h2>
+    <div class="prestige-info">
+      <div>
+        <span data-zh="當前研究：" data-en="Current Research: ">當前研究：</span>
+        <span id="currentResearch">鹽</span>
+      </div>
+      <div>
+        <span data-zh="當前倍率：" data-en="Current Multiplier: ">當前倍率：</span>
+        <span id="resetMultiplier">1.0</span>x
+      </div>
+      <div>
+        <span data-zh="下次研究：" data-en="Next Research: ">下次研究：</span>
+        <span id="nextResearch">糖</span>
+      </div>
+      <div>
+        <span data-zh="重置後獲得：" data-en="After reset: ">重置後獲得：</span>
+        <span id="nextMultiplier">1.5</span>x
+        <span data-zh="倍率" data-en="multiplier">倍率</span>
+      </div>
+    </div>
+    <button class="neon-btn" id="resetBtn"
+      data-zh="重置研究"
+      data-en="Reset Research">
+      重置研究
+    </button>
+  </div>
+  <div class="credits" data-zh="升級名稱由 you_3009 提供"
+    data-en="Upgrade names by you_3009">
+    升級名稱由 you_3009 提供
+  </div>
 </div>
 <div class="footer">© 2024 鹽分實驗室 | 科學放置遊戲</div>
 <div class="version">v1.8R-4k</div>
 <script>
+// 遊戲變量
 let saltPpm = 0;
 let waterVolume = 1000;
 let expPoints = 0;
@@ -242,11 +241,15 @@ let researchProgress = 0;
 let researchRequirement = 1000;
 let prestigeTypes = ['鹽', '糖', '鉀', '鈣', '鎂'];
 let lastUpdateTime = Date.now();
+let autoDissolveTimer = null;
 let currentLang = 'zh';
 
 document.getElementById('langSwitch').addEventListener('click', function() {
   currentLang = currentLang === 'zh' ? 'en' : 'zh';
   updateLanguage();
+  updateDisplay();
+  updateUpgradeButtons();
+  updatePrestigeInfo();
 });
 function updateLanguage() {
   document.querySelectorAll('[data-zh]').forEach(element => {
@@ -255,21 +258,6 @@ function updateLanguage() {
   document.getElementById('langSwitch').textContent =
     currentLang === 'zh' ? 'English' : '中文';
 }
-
-document.getElementById('addSaltBtn').addEventListener('click', function(e) {
-  const now = Date.now();
-  if (now - lastClickTime >= clickCooldown) {
-    const baseSalt = 0.1;
-    const prestigeMultiplier = 1 + prestigeLevel * 0.5;
-    const naturalErosionMultiplier = 1 + naturalErosionLv * 2;
-    const addedSalt = baseSalt * prestigeMultiplier * naturalErosionMultiplier;
-    saltPpm += addedSalt;
-    lastClickTime = now;
-    updateDisplay();
-    updateCooldown();
-  }
-});
-
 function updateCooldown() {
   const cooldownRing = document.querySelector('.cooldown-ring .progress');
   const cooldownText = document.getElementById('cooldownText');
@@ -288,82 +276,95 @@ function updateCooldown() {
     addSaltBtn.disabled = false;
   }
 }
-
 function updateDisplay() {
   document.getElementById('saltPpm').textContent = saltPpm.toFixed(3);
   document.getElementById('waterVolume').textContent = waterVolume.toFixed(1);
   document.getElementById('expPoints').textContent = expPoints.toFixed(0);
   document.getElementById('research').textContent = research.toFixed(1);
 }
-
 function updateUpgradeButtons() {
   // 自然侵蝕
   const naturalErosionCost = 0.001 * Math.pow(1.5, naturalErosionLv);
-  const btnNE = document.getElementById('naturalErosionBtn');
-  btnNE.querySelector('.upgrade-cost').textContent = naturalErosionCost.toFixed(3);
-  btnNE.querySelector('.upgrade-effect').textContent = (1 + naturalErosionLv * 2).toFixed(1);
-  btnNE.disabled = saltPpm < naturalErosionCost;
-  btnNE.style.opacity = saltPpm < naturalErosionCost ? '0.5' : '1';
+  document.getElementById('naturalErosionCost').textContent = naturalErosionCost.toFixed(3);
+  document.getElementById('naturalErosionEffect').textContent = (1 + naturalErosionLv * 2).toFixed(1);
+  document.getElementById('naturalErosionBtn').disabled = (saltPpm + 1e-8) < naturalErosionCost;
+  document.getElementById('naturalErosionBtn').style.opacity = (saltPpm + 1e-8) < naturalErosionCost ? '0.5' : '1';
   document.getElementById('naturalErosionLv').textContent = naturalErosionLv;
-
   // 蒸發
   const evaporationCost = 0.001 * Math.pow(1.5, evaporationLv);
-  const btnEvap = document.getElementById('evaporationBtn');
-  btnEvap.querySelector('.upgrade-cost').textContent = evaporationCost.toFixed(3);
-  btnEvap.querySelector('.upgrade-effect').textContent = (1 + evaporationLv * 1).toFixed(1);
-  btnEvap.disabled = saltPpm < evaporationCost;
-  btnEvap.style.opacity = saltPpm < evaporationCost ? '0.5' : '1';
+  document.getElementById('evaporationCost').textContent = evaporationCost.toFixed(3);
+  document.getElementById('evaporationEffect').textContent = (1 + evaporationLv * 1).toFixed(1);
+  document.getElementById('evaporationBtn').disabled = (saltPpm + 1e-8) < evaporationCost;
+  document.getElementById('evaporationBtn').style.opacity = (saltPpm + 1e-8) < evaporationCost ? '0.5' : '1';
   document.getElementById('evaporationLv').textContent = evaporationLv;
-
   // 加速勞動
   const fasterLaborCost = 0.001 * Math.pow(1.5, fasterLaborLv);
-  const btnFL = document.getElementById('fasterLaborBtn');
-  btnFL.querySelector('.upgrade-cost').textContent = fasterLaborCost.toFixed(3);
-  btnFL.querySelector('.upgrade-effect').textContent = Math.max(100, 1000 * Math.pow(0.9, fasterLaborLv + 1)).toFixed(0);
-  btnFL.disabled = saltPpm < fasterLaborCost;
-  btnFL.style.opacity = saltPpm < fasterLaborCost ? '0.5' : '1';
+  const newCooldown = Math.max(100, 1000 * Math.pow(0.9, fasterLaborLv + 1));
+  document.getElementById('fasterLaborCost').textContent = fasterLaborCost.toFixed(3);
+  document.getElementById('fasterLaborEffect').textContent = newCooldown.toFixed(0);
+  document.getElementById('fasterLaborBtn').disabled = (saltPpm + 1e-8) < fasterLaborCost || newCooldown <= 100;
+  document.getElementById('fasterLaborBtn').style.opacity = ((saltPpm + 1e-8) < fasterLaborCost || newCooldown <= 100) ? '0.5' : '1';
   document.getElementById('fasterLaborLv').textContent = fasterLaborLv;
-
   // 自動溶解
   const autoDissolveCost = 0.001 * Math.pow(1.5, autoDissolveLv);
-  const btnAD = document.getElementById('autoDissolveBtn');
-  btnAD.querySelector('.upgrade-cost').textContent = autoDissolveCost.toFixed(3);
-  btnAD.querySelector('.upgrade-effect').textContent = (autoDissolveLv * 0.1).toFixed(1);
-  btnAD.disabled = saltPpm < autoDissolveCost;
-  btnAD.style.opacity = saltPpm < autoDissolveCost ? '0.5' : '1';
+  document.getElementById('autoDissolveCost').textContent = autoDissolveCost.toFixed(3);
+  document.getElementById('autoDissolveEffect').textContent = (autoDissolveLv * 0.1).toFixed(1);
+  document.getElementById('autoDissolveBtn').disabled = (saltPpm + 1e-8) < autoDissolveCost;
+  document.getElementById('autoDissolveBtn').style.opacity = (saltPpm + 1e-8) < autoDissolveCost ? '0.5' : '1';
   document.getElementById('autoDissolveLv').textContent = autoDissolveLv;
 }
-
-function handleUpgrade(buttonId, levelVar, costMultiplier = 1) {
-  const currentCost = 0.001 * Math.pow(1.5, window[levelVar]) * costMultiplier;
-  if (saltPpm >= currentCost) {
+document.getElementById('addSaltBtn').addEventListener('click', function(e) {
+  const now = Date.now();
+  if (now - lastClickTime >= clickCooldown) {
+    const baseSalt = 0.1;
+    const prestigeMultiplier = 1 + prestigeLevel * 0.5;
+    const naturalErosionMultiplier = 1 + naturalErosionLv * 2;
+    const addedSalt = baseSalt * prestigeMultiplier * naturalErosionMultiplier;
+    saltPpm += addedSalt;
+    lastClickTime = now;
+    updateDisplay();
+    updateCooldown();
+    updateUpgradeButtons();
+  }
+});
+document.getElementById('naturalErosionBtn').onclick = function() {
+  const currentCost = 0.001 * Math.pow(1.5, naturalErosionLv);
+  if ((saltPpm + 1e-8) >= currentCost) {
     saltPpm -= currentCost;
-    window[levelVar]++;
+    naturalErosionLv++;
     updateDisplay();
     updateUpgradeButtons();
   }
-}
-
-document.getElementById('naturalErosionBtn').onclick = function() {
-  handleUpgrade('naturalErosionBtn', 'naturalErosionLv');
 };
 document.getElementById('evaporationBtn').onclick = function() {
-  handleUpgrade('evaporationBtn', 'evaporationLv');
+  const currentCost = 0.001 * Math.pow(1.5, evaporationLv);
+  if ((saltPpm + 1e-8) >= currentCost) {
+    saltPpm -= currentCost;
+    evaporationLv++;
+    updateDisplay();
+    updateUpgradeButtons();
+  }
 };
 document.getElementById('fasterLaborBtn').onclick = function() {
-  handleUpgrade('fasterLaborBtn', 'fasterLaborLv');
+  const currentCost = 0.001 * Math.pow(1.5, fasterLaborLv);
+  const newCooldown = Math.max(100, 1000 * Math.pow(0.9, fasterLaborLv + 1));
+  if ((saltPpm + 1e-8) >= currentCost && newCooldown > 100) {
+    saltPpm -= currentCost;
+    fasterLaborLv++;
+    clickCooldown = newCooldown;
+    updateDisplay();
+    updateUpgradeButtons();
+  }
 };
 document.getElementById('autoDissolveBtn').onclick = function() {
-  handleUpgrade('autoDissolveBtn', 'autoDissolveLv');
+  const currentCost = 0.001 * Math.pow(1.5, autoDissolveLv);
+  if ((saltPpm + 1e-8) >= currentCost) {
+    saltPpm -= currentCost;
+    autoDissolveLv++;
+    updateDisplay();
+    updateUpgradeButtons();
+  }
 };
-
-function initCooldown() {
-  const cooldownRing = document.querySelector('.cooldown-ring .progress');
-  cooldownRing.style.strokeDasharray = '169.6';
-  cooldownRing.style.strokeDashoffset = '0';
-  document.getElementById('cooldownText').textContent = 'Ready';
-}
-
 document.getElementById('resetBtn').addEventListener('click', function() {
   const baseCost = 1000 * Math.pow(1.5, prestigeLevel);
   if (saltPpm >= baseCost) {
@@ -384,11 +385,12 @@ document.getElementById('resetBtn').addEventListener('click', function() {
     updatePrestigeInfo();
   }
 });
-
 function updatePrestigeInfo() {
-  // 可根據需要補充 prestige 顯示
+  document.getElementById('currentResearch').textContent = prestigeTypes[currentResearch];
+  document.getElementById('resetMultiplier').textContent = (1 + prestigeLevel * 0.5).toFixed(1);
+  document.getElementById('nextResearch').textContent = prestigeTypes[Math.min(currentResearch + 1, prestigeTypes.length - 1)];
+  document.getElementById('nextMultiplier').textContent = (1 + (prestigeLevel + 1) * 0.5).toFixed(1);
 }
-
 function saveGame() {
   const gameState = {
     saltPpm,
@@ -409,54 +411,43 @@ function loadGame() {
   const savedGame = localStorage.getItem('saltLabSave');
   if (savedGame) {
     const gameState = JSON.parse(savedGame);
-    saltPpm = gameState.saltPpm ?? 0;
-    waterVolume = gameState.waterVolume ?? 1000;
-    expPoints = gameState.expPoints ?? 0;
-    researchProgress = gameState.researchProgress ?? 0;
-    prestigeLevel = gameState.prestigeLevel ?? 0;
-    naturalErosionLv = gameState.naturalErosionLv ?? 0;
-    evaporationLv = gameState.evaporationLv ?? 0;
-    fasterLaborLv = gameState.fasterLaborLv ?? 0;
-    autoDissolveLv = gameState.autoDissolveLv ?? 0;
-    currentResearch = gameState.currentResearch ?? 0;
-    // 離線自動溶解補償
-    if (gameState.lastUpdate) {
-      const offlineTime = (Date.now() - gameState.lastUpdate) / 1000;
-      if (offlineTime > 0 && autoDissolveLv > 0) {
-        saltPpm += autoDissolveLv * 0.1 * offlineTime;
-      }
+    Object.assign(window, gameState);
+    const offlineTime = (Date.now() - gameState.lastUpdate) / 1000;
+    if (offlineTime > 0) {
+      const offlineGain = autoDissolveLv * 0.1 * offlineTime;
+      saltPpm += offlineGain;
+      updateDisplay();
     }
-    updateDisplay();
-    updateUpgradeButtons();
   }
 }
 setInterval(saveGame, 30000);
 window.addEventListener('load', loadGame);
-
 window.addEventListener('load', function() {
-  initCooldown();
+  saltPpm = 0;
   updateDisplay();
   updateUpgradeButtons();
   updatePrestigeInfo();
   lastUpdateTime = Date.now();
   requestAnimationFrame(gameLoop);
 });
-
 function gameLoop() {
   const now = Date.now();
   const deltaTime = (now - lastUpdateTime) / 1000;
   lastUpdateTime = now;
-  // 自動溶解（自動增加鹽分）
+  // 自動溶解
   if (autoDissolveLv > 0) {
-    saltPpm += 0.1 * autoDissolveLv * deltaTime;
+    const dissolveAmount = 0.1 * autoDissolveLv * deltaTime;
+    saltPpm += dissolveAmount;
   }
   // 自然侵蝕
   if (naturalErosionLv > 0) {
-    saltPpm += 0.05 * naturalErosionLv * deltaTime;
+    const erosionAmount = 0.05 * naturalErosionLv * deltaTime;
+    saltPpm += erosionAmount;
   }
   // 蒸發
   if (evaporationLv > 0) {
-    waterVolume = Math.max(100, waterVolume - 0.02 * evaporationLv * deltaTime);
+    const evaporationAmount = 0.02 * evaporationLv * deltaTime;
+    waterVolume = Math.max(100, waterVolume - evaporationAmount);
   }
   updateDisplay();
   updateUpgradeButtons();
