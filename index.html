@@ -384,40 +384,39 @@ function updateDisplay() {
 function updateUpgradeButtons() {
   // 自然侵蝕
   const naturalErosionCost = 0.001 * Math.pow(1.5, naturalErosionLv);
-  document.getElementById('naturalErosionBtn').innerHTML =
-    `<span data-zh="自然侵蝕" data-en="Natural Erosion">自然侵蝕</span> Lv.${naturalErosionLv}<br>
-    <span data-zh="效果：" data-en="Effect: ">效果：</span>+${naturalErosionLv * 2}x<br>
-    <span data-zh="花費：" data-en="Cost: ">花費：</span>${naturalErosionCost.toFixed(3)} mg/L`;
-  document.getElementById('naturalErosionBtn').disabled = saltPpm < naturalErosionCost;
-  document.getElementById('naturalErosionBtn').style.opacity = saltPpm < naturalErosionCost ? '0.5' : '1';
+  const btnNE = document.getElementById('naturalErosionBtn');
+  btnNE.querySelector('.upgrade-cost').textContent = naturalErosionCost.toFixed(3);
+  btnNE.querySelector('.upgrade-effect').textContent = (1 + naturalErosionLv * 2).toFixed(1);
+  btnNE.disabled = saltPpm < naturalErosionCost;
+  btnNE.style.opacity = saltPpm < naturalErosionCost ? '0.5' : '1';
+  document.getElementById('naturalErosionLv').textContent = naturalErosionLv;
 
   // 蒸發
   const evaporationCost = 0.001 * Math.pow(1.5, evaporationLv);
-  document.getElementById('evaporationBtn').innerHTML =
-    `<span data-zh="蒸發" data-en="Evaporation">蒸發</span> Lv.${evaporationLv}<br>
-    <span data-zh="效果：" data-en="Effect: ">效果：</span>-${evaporationLv}L/s<br>
-    <span data-zh="花費：" data-en="Cost: ">花費：</span>${evaporationCost.toFixed(3)} mg/L`;
-  document.getElementById('evaporationBtn').disabled = saltPpm < evaporationCost;
-  document.getElementById('evaporationBtn').style.opacity = saltPpm < evaporationCost ? '0.5' : '1';
+  const btnEvap = document.getElementById('evaporationBtn');
+  btnEvap.querySelector('.upgrade-cost').textContent = evaporationCost.toFixed(3);
+  btnEvap.querySelector('.upgrade-effect').textContent = (1 + evaporationLv * 1).toFixed(1);
+  btnEvap.disabled = saltPpm < evaporationCost;
+  btnEvap.style.opacity = saltPpm < evaporationCost ? '0.5' : '1';
+  document.getElementById('evaporationLv').textContent = evaporationLv;
 
   // 加速勞動
   const fasterLaborCost = 0.001 * Math.pow(1.5, fasterLaborLv);
-  const newCooldown = Math.max(100, 1000 * Math.pow(0.9, fasterLaborLv + 1));
-  document.getElementById('fasterLaborBtn').innerHTML =
-    `<span data-zh="加速勞動" data-en="Faster Labor">加速勞動</span> Lv.${fasterLaborLv}<br>
-    <span data-zh="效果：" data-en="Effect: ">效果：</span>${newCooldown.toFixed(0)}ms<br>
-    <span data-zh="花費：" data-en="Cost: ">花費：</span>${fasterLaborCost.toFixed(3)} mg/L`;
-  document.getElementById('fasterLaborBtn').disabled = saltPpm < fasterLaborCost || newCooldown <= 100;
-  document.getElementById('fasterLaborBtn').style.opacity = (saltPpm < fasterLaborCost || newCooldown <= 100) ? '0.5' : '1';
+  const btnFL = document.getElementById('fasterLaborBtn');
+  btnFL.querySelector('.upgrade-cost').textContent = fasterLaborCost.toFixed(3);
+  btnFL.querySelector('.upgrade-effect').textContent = Math.max(100, 1000 * Math.pow(0.9, fasterLaborLv + 1)).toFixed(0);
+  btnFL.disabled = saltPpm < fasterLaborCost;
+  btnFL.style.opacity = saltPpm < fasterLaborCost ? '0.5' : '1';
+  document.getElementById('fasterLaborLv').textContent = fasterLaborLv;
 
   // 自動溶解
   const autoDissolveCost = 0.001 * Math.pow(1.5, autoDissolveLv);
-  document.getElementById('autoDissolveBtn').innerHTML =
-    `<span data-zh="自動溶解" data-en="Auto Dissolve">自動溶解</span> Lv.${autoDissolveLv}<br>
-    <span data-zh="效果：" data-en="Effect: ">效果：</span>-${autoDissolveLv * 0.1}/s<br>
-    <span data-zh="花費：" data-en="Cost: ">花費：</span>${autoDissolveCost.toFixed(3)} mg/L`;
-  document.getElementById('autoDissolveBtn').disabled = saltPpm < autoDissolveCost;
-  document.getElementById('autoDissolveBtn').style.opacity = saltPpm < autoDissolveCost ? '0.5' : '1';
+  const btnAD = document.getElementById('autoDissolveBtn');
+  btnAD.querySelector('.upgrade-cost').textContent = autoDissolveCost.toFixed(3);
+  btnAD.querySelector('.upgrade-effect').textContent = (autoDissolveLv * 0.1).toFixed(1);
+  btnAD.disabled = saltPpm < autoDissolveCost;
+  btnAD.style.opacity = saltPpm < autoDissolveCost ? '0.5' : '1';
+  document.getElementById('autoDissolveLv').textContent = autoDissolveLv;
 }
 // 重置事件
 document.getElementById('resetBtn').addEventListener('click', function() {
