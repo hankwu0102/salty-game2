@@ -271,14 +271,12 @@ data-en="Upgrade names by you_3009">
 <div class="animation-container" id="animationContainer"></div>
 <div class="version">v1.8R-4k</div>
 <script>
-// 遊戲變量
 let saltPpm = 0;
 let waterVolume = 1000;
 let expPoints = 0;
 let research = 0;
 let lastClickTime = 0;
 let clickCooldown = 1000;
-// 升級等級
 let naturalErosionLv = 0;
 let evaporationLv = 0;
 let fasterLaborLv = 0;
@@ -287,14 +285,10 @@ let prestigeLevel = 0;
 let currentResearch = 0;
 let researchProgress = 0;
 let researchRequirement = 1000;
-let prestigeTypes = ['鹽', '糖', '鉀', '鈣', '鎂']; // 範例
-
+let prestigeTypes = ['鹽', '糖', '鉀', '鈣', '鎂'];
 let lastUpdateTime = Date.now();
-
-// 自動溶解計時器
-let autoDissolveTimer = null;
-// 語言切換
 let currentLang = 'zh';
+
 document.getElementById('langSwitch').addEventListener('click', function() {
   currentLang = currentLang === 'zh' ? 'en' : 'zh';
   updateLanguage();
@@ -306,25 +300,33 @@ function updateLanguage() {
   document.getElementById('langSwitch').textContent =
     currentLang === 'zh' ? 'English' : '中文';
 }
-// 動畫相關
-function createSaltDrop(x, y) {
-  const container = document.getElementById('animationContainer');
-  const containerRect = container.getBoundingClientRect();
-  const relativeX = (x - containerRect.left) % containerRect.width;
-  const drop = document.createElement('div');
-  drop.className = 'salt-drop';
-  drop.style.left = relativeX + 'px';
-  drop.style.top = '0px';
-  container.appendChild(drop);
-  const ripple = document.createElement('div');
-  ripple.className = 'water-ripple';
-  container.appendChild(ripple);
-  setTimeout(() => {
-    drop.remove();
-    ripple.remove();
-  }, 1000);
+
+function createSaltParticle(x, y) {
+  const particle = document.createElement('div');
+  particle.className = 'salt-particle';
+  particle.style.left = x + 'px';
+  particle.style.top = y + 'px';
+  particle.style.background = '#0f0';
+  particle.style.boxShadow = '0 0 10px #0f0, 0 0 20px #0f08';
+  document.body.appendChild(particle);
+  setTimeout(() => particle.remove(), 1000);
 }
-// 冷卻更新
+
+document.getElementById('addSaltBtn').addEventListener('click', function(e) {
+  const now = Date.now();
+  if (now - lastClickTime >= clickCooldown) {
+    const baseSalt = 0.1;
+    const prestigeMultiplier = 1 + prestigeLevel * 0.5;
+    const naturalErosionMultiplier = 1 + naturalErosionLv * 2;
+    const addedSalt = baseSalt * prestigeMultiplier * naturalErosionMultiplier;
+    saltPpm += addedSalt;
+    lastClickTime = now;
+    createSaltParticle(e.clientX, e.clientY);
+    updateDisplay();
+    updateCooldown();
+  }
+});
+
 function updateCooldown() {
   const cooldownRing = document.querySelector('.cooldown-ring .progress');
   const cooldownText = document.getElementById('cooldownText');
@@ -343,70 +345,14 @@ function updateCooldown() {
     addSaltBtn.disabled = false;
   }
 }
-// 鹽粒動畫
-function createSaltParticle(x, y) {
-  const particle = document.createElement('div');
-  particle.className = 'salt-particle';
-  particle.style.left = x + 'px';
-  particle.style.top = y + 'px';
-  particle.style.background = '#0f0';
-  particle.style.boxShadow = '0 0 10px #0f0, 0 0 20px #0f08';
-  document.body.appendChild(particle);
-  setTimeout(() => particle.remove(), 1000);
-}
-// 點擊添加鹽分
-document.getElementById('addSaltBtn').addEventListener('click', function(e) {
-  const now = Date.now();
-  if (now - lastClickTime >= clickCooldown) {
-    const baseSalt = 0.1;
-    const prestigeMultiplier = 1 + prestigeLevel * 0.5;
-    const naturalErosionMultiplier = 1 + naturalErosionLv * 2;
-    const addedSalt = baseSalt * prestigeMultiplier * naturalErosionMultiplier;
-    saltPpm += addedSalt;
-    lastClickTime = now;
-    createSaltParticle(e.clientX, e.clientY);
-    updateDisplay();
-    updateCooldown();
-  }
-});
-// 自動溶解
-function startAutoDissolve() {
-  setInterval(() => {
-    if (autoDissolveLv > 0) {
-      const baseSalt = 0.5 * autoDissolveLv;
-      const waterEffect = Math.sqrt(waterVolume) / 10;
-      const prestigeMultiplier = 1 + prestigeLevel * 0.5;
-      const addedSalt = baseSalt * waterEffect * prestigeMultiplier;
-      const newPpm = addedSalt / waterVolume;
-      saltPpm += newPpm;
-      const btn = document.getElementById('autoDissolveBtn');
-      const rect = btn.getBoundingClientRect();
-      createSaltDrop(
-        rect.left + Math.random() * rect.width,
-        rect.top + rect.height / 2
-      );
-      updateDisplay();
-    }
-  }, 1000);
-}
-// 蒸發升級
-document.getElementById('evaporationBtn').addEventListener('click', function() {
-  const currentCost = 0.001 * Math.pow(1.5, evaporationLv);
-  if (saltPpm >= currentCost) {
-    saltPpm -= currentCost;
-    evaporationLv++;
-    updateDisplay();
-    updateUpgradeButtons();
-  }
-});
-// 顯示更新
+
 function updateDisplay() {
   document.getElementById('saltPpm').textContent = saltPpm.toFixed(3);
   document.getElementById('waterVolume').textContent = waterVolume.toFixed(1);
   document.getElementById('expPoints').textContent = expPoints.toFixed(0);
   document.getElementById('research').textContent = research.toFixed(1);
 }
-// 升級按鈕內容
+
 function updateUpgradeButtons() {
   // 自然侵蝕
   const naturalErosionCost = 0.001 * Math.pow(1.5, naturalErosionLv);
@@ -415,7 +361,6 @@ function updateUpgradeButtons() {
   btnNE.querySelector('.upgrade-effect').textContent = (1 + naturalErosionLv * 2).toFixed(1);
   btnNE.disabled = saltPpm < naturalErosionCost;
   btnNE.style.opacity = saltPpm < naturalErosionCost ? '0.5' : '1';
-  // 補這一行
   document.getElementById('naturalErosionLv').textContent = naturalErosionLv;
 
   // 蒸發
@@ -425,7 +370,6 @@ function updateUpgradeButtons() {
   btnEvap.querySelector('.upgrade-effect').textContent = (1 + evaporationLv * 1).toFixed(1);
   btnEvap.disabled = saltPpm < evaporationCost;
   btnEvap.style.opacity = saltPpm < evaporationCost ? '0.5' : '1';
-  // 補這一行
   document.getElementById('evaporationLv').textContent = evaporationLv;
 
   // 加速勞動
@@ -435,7 +379,6 @@ function updateUpgradeButtons() {
   btnFL.querySelector('.upgrade-effect').textContent = Math.max(100, 1000 * Math.pow(0.9, fasterLaborLv + 1)).toFixed(0);
   btnFL.disabled = saltPpm < fasterLaborCost;
   btnFL.style.opacity = saltPpm < fasterLaborCost ? '0.5' : '1';
-  // 補這一行
   document.getElementById('fasterLaborLv').textContent = fasterLaborLv;
 
   // 自動溶解
@@ -445,10 +388,49 @@ function updateUpgradeButtons() {
   btnAD.querySelector('.upgrade-effect').textContent = (autoDissolveLv * 0.1).toFixed(1);
   btnAD.disabled = saltPpm < autoDissolveCost;
   btnAD.style.opacity = saltPpm < autoDissolveCost ? '0.5' : '1';
-  // 補這一行
   document.getElementById('autoDissolveLv').textContent = autoDissolveLv;
 }
-// 重置事件
+
+function animateButton(btn) {
+  btn.style.transform = 'scale(1.1)';
+  btn.style.boxShadow = '0 0 30px #0f0, 0 0 60px #0f08';
+  setTimeout(() => {
+    btn.style.transform = '';
+    btn.style.boxShadow = '';
+  }, 180);
+}
+
+function handleUpgrade(buttonId, levelVar, costMultiplier = 1) {
+  const currentCost = 0.001 * Math.pow(1.5, window[levelVar]) * costMultiplier;
+  if (saltPpm >= currentCost) {
+    saltPpm -= currentCost;
+    window[levelVar]++;
+    updateDisplay();
+    updateUpgradeButtons();
+    animateButton(document.getElementById(buttonId));
+  }
+}
+
+document.getElementById('naturalErosionBtn').onclick = function() {
+  handleUpgrade('naturalErosionBtn', 'naturalErosionLv');
+};
+document.getElementById('evaporationBtn').onclick = function() {
+  handleUpgrade('evaporationBtn', 'evaporationLv');
+};
+document.getElementById('fasterLaborBtn').onclick = function() {
+  handleUpgrade('fasterLaborBtn', 'fasterLaborLv');
+};
+document.getElementById('autoDissolveBtn').onclick = function() {
+  handleUpgrade('autoDissolveBtn', 'autoDissolveLv');
+};
+
+function initCooldown() {
+  const cooldownRing = document.querySelector('.cooldown-ring .progress');
+  cooldownRing.style.strokeDasharray = '169.6';
+  cooldownRing.style.strokeDashoffset = '0';
+  document.getElementById('cooldownText').textContent = 'Ready';
+}
+
 document.getElementById('resetBtn').addEventListener('click', function() {
   const baseCost = 1000 * Math.pow(1.5, prestigeLevel);
   if (saltPpm >= baseCost) {
@@ -469,57 +451,11 @@ document.getElementById('resetBtn').addEventListener('click', function() {
     updatePrestigeInfo();
   }
 });
-// 重置系統
+
 function updatePrestigeInfo() {
-  const baseCost = 1000;
-  const nextCost = baseCost * Math.pow(1.5, prestigeLevel);
-  const nextMult = 1 + (prestigeLevel + 1) * 0.5;
-  // 這裡請根據你的 HTML id 做調整
-  // document.getElementById('nextPrestigeCost').textContent = Math.floor(nextCost).toLocaleString();
-  // document.getElementById('prestigeMult').textContent = (1 + prestigeLevel * 0.5).toFixed(1);
-  // document.getElementById('nextPrestigeMult').textContent = nextMult.toFixed(1);
-  // document.getElementById('nextPrestige').textContent = prestigeLevel < prestigeTypes.length ? prestigeTypes[prestigeLevel] : (currentLang === 'zh' ? '已完成所有研究' : 'All Research Complete');
-  // document.getElementById('prestigeBtn').disabled = saltPpm < nextCost;
-  // document.getElementById('prestigeBtn').style.opacity = saltPpm >= nextCost ? '1' : '0.5';
-}
-// 升級按鈕事件處理
-function animateButton(btn) {
-  btn.style.transform = 'scale(1.1)';
-  setTimeout(() => {
-    btn.style.transform = '';
-  }, 150);
+  // 可根據需要補充 prestige 顯示
 }
 
-// 修改 handleUpgrade 讓升級時有動畫
-function handleUpgrade(buttonId, levelVar, costMultiplier = 1) {
-  const currentCost = 0.001 * Math.pow(1.5, window[levelVar]) * costMultiplier;
-  if (saltPpm >= currentCost) {
-    saltPpm -= currentCost;
-    window[levelVar]++;
-    updateDisplay();
-    updateUpgradeButtons();
-    animateButton(document.getElementById(buttonId));
-  }
-}
-
-// 綁定升級按鈕
-document.getElementById('naturalErosionBtn').onclick = function() {
-  handleUpgrade('naturalErosionBtn', 'naturalErosionLv');
-};
-document.getElementById('fasterLaborBtn').onclick = function() {
-  handleUpgrade('fasterLaborBtn', 'fasterLaborLv');
-};
-document.getElementById('autoDissolveBtn').onclick = function() {
-  handleUpgrade('autoDissolveBtn', 'autoDissolveLv');
-};
-// 初始化冷卻環
-function initCooldown() {
-  const cooldownRing = document.querySelector('.cooldown-ring .progress');
-  cooldownRing.style.strokeDasharray = '169.6';
-  cooldownRing.style.strokeDashoffset = '0';
-  document.getElementById('cooldownText').textContent = 'Ready';
-}
-// 儲存/載入
 function saveGame() {
   const gameState = {
     saltPpm,
@@ -529,63 +465,68 @@ function saveGame() {
     prestigeLevel,
     naturalErosionLv,
     evaporationLv,
-    fasterLaborLv,onst gameState = JSON.parse(savedGame);
-    autoDissolveLv, Object.assign(window, gameState);
-    currentResearch,   const offlineTime = (Date.now() - gameState.lastUpdate) / 1000;
-    lastUpdate: Date.now()(offlineTime > 0) {
-  };oDissolveLv * 0.5 * offlineTime;
-  localStorage.setItem('saltLabSave', JSON.stringify(gameState));m += offlineGain;
+    fasterLaborLv,
+    autoDissolveLv,
+    currentResearch,
+    lastUpdate: Date.now()
+  };
+  localStorage.setItem('saltLabSave', JSON.stringify(gameState));
 }
 function loadGame() {
   const savedGame = localStorage.getItem('saltLabSave');
   if (savedGame) {
+    const gameState = JSON.parse(savedGame);
+    saltPpm = gameState.saltPpm ?? 0;
+    waterVolume = gameState.waterVolume ?? 1000;
+    expPoints = gameState.expPoints ?? 0;
+    researchProgress = gameState.researchProgress ?? 0;
+    prestigeLevel = gameState.prestigeLevel ?? 0;
+    naturalErosionLv = gameState.naturalErosionLv ?? 0;
+    evaporationLv = gameState.evaporationLv ?? 0;
+    fasterLaborLv = gameState.fasterLaborLv ?? 0;
+    autoDissolveLv = gameState.autoDissolveLv ?? 0;
+    currentResearch = gameState.currentResearch ?? 0;
+    // 離線自動溶解補償
+    if (gameState.lastUpdate) {
+      const offlineTime = (Date.now() - gameState.lastUpdate) / 1000;
+      if (offlineTime > 0 && autoDissolveLv > 0) {
+        saltPpm += autoDissolveLv * 0.1 * offlineTime;
+      }
     }
-  }me, 30000);
+    updateDisplay();
+    updateUpgradeButtons();
+  }
 }
-// 自動保存r('load', loadGame);
 setInterval(saveGame, 30000);
-// 頁面載入時讀取存檔, function() {
 window.addEventListener('load', loadGame);
-// 頁面加載時初始化nitCooldown();
-window.addEventListener('load', function() {eDisplay();
-  saltPpm = 0;s();
+
+window.addEventListener('load', function() {
   initCooldown();
   updateDisplay();
-  updateUpgradeButtons();.now();
-  startAutoDissolve();nFrame(gameLoop);
+  updateUpgradeButtons();
   updatePrestigeInfo();
   lastUpdateTime = Date.now();
   requestAnimationFrame(gameLoop);
-});onst now = Date.now();
-// 遊戲循環eltaTime = (now - lastUpdateTime) / 1000;
+});
+
 function gameLoop() {
   const now = Date.now();
   const deltaTime = (now - lastUpdateTime) / 1000;
-  lastUpdateTime = now; const addAmount = 0.1 * autoDissolveLv * deltaTime;
-  // 自動溶解（自動增加鹽分）tPpm += addAmount;
+  lastUpdateTime = now;
+  // 自動溶解（自動增加鹽分）
   if (autoDissolveLv > 0) {
-    const addAmount = 0.1 * autoDissolveLv * deltaTime;
-    saltPpm += addAmount;
-  } const erosionAmount = 0.05 * naturalErosionLv * deltaTime;
-  // 自然侵蝕sionAmount;
+    saltPpm += 0.1 * autoDissolveLv * deltaTime;
+  }
+  // 自然侵蝕
   if (naturalErosionLv > 0) {
-    const erosionAmount = 0.05 * naturalErosionLv * deltaTime;
-    saltPpm += erosionAmount;
-  }   const evaporationAmount = 0.02 * evaporationLv * deltaTime;
-  // 蒸發Volume = Math.max(100, waterVolume - evaporationAmount);
+    saltPpm += 0.05 * naturalErosionLv * deltaTime;
+  }
+  // 蒸發
   if (evaporationLv > 0) {
-    const evaporationAmount = 0.02 * evaporationLv * deltaTime;eDisplay();
-
-
-
-
-
-
-
-
-
-
-</html></body></script>}  requestAnimationFrame(gameLoop);  updatePrestigeInfo();  updateUpgradeButtons();  updateDisplay();  }    waterVolume = Math.max(100, waterVolume - evaporationAmount);  updateUpgradeButtons();
+    waterVolume = Math.max(100, waterVolume - 0.02 * evaporationLv * deltaTime);
+  }
+  updateDisplay();
+  updateUpgradeButtons();
   updatePrestigeInfo();
   requestAnimationFrame(gameLoop);
 }
