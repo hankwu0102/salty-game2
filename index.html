@@ -407,12 +407,16 @@ body {
       ⚠️ 超越會重置所有進度，請謹慎操作！
     </div>
   </div>
-  <div class="credits" data-zh="升級名稱由 you_3009 提供"
-    data-en="Upgrade names by you_3009">
-    升級名稱由 you_3009 提供
-  </div>
+  <div class="credits"
+  data-zh="升級名稱由 you_3009 提供"
+  data-en="Upgrade names by you_3009">
+  升級名稱由 you_3009 提供
 </div>
-<div class="footer">© 2025 鹽分實驗室 | 科學放置遊戲</div>
+<div class="footer"
+  data-zh="© 2025 鹽分實驗室 | 科學放置遊戲"
+  data-en="© 2025 Salt Laboratory | Science Idle Game">
+  © 2025 鹽分實驗室 | 科學放置遊戲
+</div>
 <div class="version">v1.11K.5-09p~1!!E</div>
 <!-- 增加一個不可見的 div 讓頁面可以滾動超過底部 -->
 <div style="height: 120px; pointer-events: none; opacity: 0;"></div>
@@ -706,24 +710,17 @@ window.addEventListener('DOMContentLoaded', function() {
   // translateAll 只更新文字，不要用 innerHTML 直接覆蓋按鈕
   function translateAll() {
     const lang = langData[currentLang];
-    document.querySelector('.game-title').textContent = lang.title;
-    document.querySelector('.game-desc').textContent = lang.desc;
-    document.querySelector('.peaceful-tip').textContent = lang.tip;
-    // 升級按鈕
-    document.querySelector('#naturalErosionBtn span[data-zh]').textContent = lang.naturalErosion;
-    document.querySelector('#naturalErosionBtn span[data-zh][data-en]').nextElementSibling.textContent = lang.cost;
-    document.querySelector('#naturalErosionBtn span.upgrade-effect').nextElementSibling.textContent = lang.salt;
-    document.querySelector('#evaporationBtn span[data-zh]').textContent = lang.evaporation;
-    document.querySelector('#evaporationBtn span[data-zh][data-en]').nextElementSibling.textContent = lang.cost;
-    document.querySelector('#evaporationBtn span.upgrade-effect').nextElementSibling.textContent = lang.water;
-    document.querySelector('#fasterLaborBtn span[data-zh]').textContent = lang.fasterLabor;
-    document.querySelector('#fasterLaborBtn span[data-zh][data-en]').nextElementSibling.textContent = lang.cost;
-    document.querySelector('#fasterLaborBtn span.upgrade-effect').nextElementSibling.textContent = lang.ms;
-    document.querySelector('#autoDissolveBtn span[data-zh]').textContent = lang.autoDissolve;
-    document.querySelector('#autoDissolveBtn span[data-zh][data-en]').nextElementSibling.textContent = lang.cost;
-    document.querySelector('#autoDissolveBtn span.upgrade-effect').nextElementSibling.textContent = lang.salt;
-    document.getElementById('addSaltBtn').querySelector('span').textContent = lang.addSalt;
-    // 其他區塊同理
+    // 1. 直接覆蓋所有有 data-zh/data-en 的元素
+    document.querySelectorAll('[data-zh][data-en]').forEach(el => {
+      el.textContent = el.getAttribute(currentLang === 'zh' ? 'data-zh' : 'data-en');
+    });
+    // 2. 針對特殊區塊（如 footer、credits、version）直接覆蓋
+    const credits = document.querySelector('.credits');
+    if (credits) credits.textContent = lang.upgradeBy;
+    const footer = document.querySelector('.footer');
+    if (footer) footer.textContent = lang.copyright;
+    // 3. 其他動態內容（如彈窗）也直接覆蓋
+    document.getElementById('langSwitch').textContent = currentLang === "zh" ? "English" : "中文";
   }
 
   // 彈窗開關
