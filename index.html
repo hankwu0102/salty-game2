@@ -22,15 +22,13 @@ margin-bottom: 10px;
 color: #0ff;
 }
 
-.neon-btn {
-background: #000;
-border: 2px solid #0ff;
-color: #0ff;
-padding: 10px 20px;
-font-size: 1.1em;
-cursor: pointer;
-margin: 5px;
-transition: all 0.2s;
+.neon-btn, .upgrade .neon-btn {
+background: #001a00;
+border: 2px solid #0f0;
+color: #0f0;
+box-shadow: 0 0 10px #0f0, 0 0 20px #0f08;
+transition: all 0.2s, box-shadow 0.4s;
+animation: neon-glow 1.5s infinite alternate;
 }
 
 .neon-btn:hover:not(:disabled) {
@@ -41,6 +39,15 @@ background: rgba(0, 255, 255, 0.1);
 opacity: 0.5;
 cursor: not-allowed;
 border-color: #444;
+}
+
+.neon-btn:active {
+box-shadow: 0 0 20px #0f0, 0 0 40px #0f08;
+}
+
+@keyframes neon-glow {
+from { box-shadow: 0 0 10px #0f0, 0 0 20px #0f08; }
+to   { box-shadow: 0 0 20px #0f0, 0 0 40px #0f08; }
 }
 
 .display {
@@ -83,7 +90,7 @@ stroke: rgba(0, 255, 255, 0.2);
 }
 
 .cooldown-ring .progress {
-stroke: #0ff;
+stroke: #0f0;
 stroke-linecap: round;
 transition: stroke-dashoffset 0.1s linear;
 }
@@ -94,16 +101,33 @@ top: 50%;
 left: 50%;
 transform: translate(-50%, -50%);
 font-size: 0.9em;
-color: #0ff;
+color: #0f0;
 }
 
 .version {
 position: fixed;
 bottom: 10px;
 right: 10px;
-color: #0ff;
+color: #0f0;
 font-size: 0.8em;
 opacity: 0.7;
+}
+
+.salt-particle {
+position: fixed;
+width: 12px;
+height: 12px;
+border-radius: 50%;
+pointer-events: none;
+z-index: 9999;
+background: #0f0;
+opacity: 0.8;
+animation: salt-pop 1s linear;
+}
+@keyframes salt-pop {
+0% { transform: scale(0.7); opacity: 1; }
+80% { transform: scale(1.2); opacity: 0.7; }
+100% { transform: scale(1.5); opacity: 0; }
 }
 </style>
 </head>
@@ -135,7 +159,7 @@ data-zh="實驗數據" data-en="Experiment Data">實驗數據</div>
 <div class="cooldown-ring">
 <svg width="60" height="60">
 <circle class="background" cx="30" cy="30" r="27" fill="none" stroke="rgba(0, 255, 255, 0.2)" stroke-width="4"/>
-<circle class="progress" cx="30" cy="30" r="27" fill="none" stroke="#0ff" stroke-width="4" stroke-dasharray="169.6" stroke-dashoffset="0"/>
+<circle class="progress" cx="30" cy="30" r="27" fill="none" stroke="#0f0" stroke-width="4" stroke-dasharray="169.6" stroke-dashoffset="0"/>
 </svg>
 <div class="cooldown-text" id="cooldownText">1000ms</div>
 </div>
@@ -325,6 +349,8 @@ function createSaltParticle(x, y) {
   particle.className = 'salt-particle';
   particle.style.left = x + 'px';
   particle.style.top = y + 'px';
+  particle.style.background = '#0f0';
+  particle.style.boxShadow = '0 0 10px #0f0, 0 0 20px #0f08';
   document.body.appendChild(particle);
   setTimeout(() => particle.remove(), 1000);
 }
@@ -389,6 +415,7 @@ function updateUpgradeButtons() {
   btnNE.querySelector('.upgrade-effect').textContent = (1 + naturalErosionLv * 2).toFixed(1);
   btnNE.disabled = saltPpm < naturalErosionCost;
   btnNE.style.opacity = saltPpm < naturalErosionCost ? '0.5' : '1';
+  // 補這一行
   document.getElementById('naturalErosionLv').textContent = naturalErosionLv;
 
   // 蒸發
@@ -398,6 +425,7 @@ function updateUpgradeButtons() {
   btnEvap.querySelector('.upgrade-effect').textContent = (1 + evaporationLv * 1).toFixed(1);
   btnEvap.disabled = saltPpm < evaporationCost;
   btnEvap.style.opacity = saltPpm < evaporationCost ? '0.5' : '1';
+  // 補這一行
   document.getElementById('evaporationLv').textContent = evaporationLv;
 
   // 加速勞動
@@ -407,6 +435,7 @@ function updateUpgradeButtons() {
   btnFL.querySelector('.upgrade-effect').textContent = Math.max(100, 1000 * Math.pow(0.9, fasterLaborLv + 1)).toFixed(0);
   btnFL.disabled = saltPpm < fasterLaborCost;
   btnFL.style.opacity = saltPpm < fasterLaborCost ? '0.5' : '1';
+  // 補這一行
   document.getElementById('fasterLaborLv').textContent = fasterLaborLv;
 
   // 自動溶解
@@ -416,6 +445,7 @@ function updateUpgradeButtons() {
   btnAD.querySelector('.upgrade-effect').textContent = (autoDissolveLv * 0.1).toFixed(1);
   btnAD.disabled = saltPpm < autoDissolveCost;
   btnAD.style.opacity = saltPpm < autoDissolveCost ? '0.5' : '1';
+  // 補這一行
   document.getElementById('autoDissolveLv').textContent = autoDissolveLv;
 }
 // 重置事件
@@ -453,6 +483,14 @@ function updatePrestigeInfo() {
   // document.getElementById('prestigeBtn').style.opacity = saltPpm >= nextCost ? '1' : '0.5';
 }
 // 升級按鈕事件處理
+function animateButton(btn) {
+  btn.style.transform = 'scale(1.1)';
+  setTimeout(() => {
+    btn.style.transform = '';
+  }, 150);
+}
+
+// 修改 handleUpgrade 讓升級時有動畫
 function handleUpgrade(buttonId, levelVar, costMultiplier = 1) {
   const currentCost = 0.001 * Math.pow(1.5, window[levelVar]) * costMultiplier;
   if (saltPpm >= currentCost) {
@@ -460,8 +498,10 @@ function handleUpgrade(buttonId, levelVar, costMultiplier = 1) {
     window[levelVar]++;
     updateDisplay();
     updateUpgradeButtons();
+    animateButton(document.getElementById(buttonId));
   }
 }
+
 // 綁定升級按鈕
 document.getElementById('naturalErosionBtn').onclick = function() {
   handleUpgrade('naturalErosionBtn', 'naturalErosionLv');
@@ -489,63 +529,63 @@ function saveGame() {
     prestigeLevel,
     naturalErosionLv,
     evaporationLv,
-    fasterLaborLv,
-    autoDissolveLv,
-    currentResearch,
-    lastUpdate: Date.now()
-  };
-  localStorage.setItem('saltLabSave', JSON.stringify(gameState));
+    fasterLaborLv,onst gameState = JSON.parse(savedGame);
+    autoDissolveLv, Object.assign(window, gameState);
+    currentResearch,   const offlineTime = (Date.now() - gameState.lastUpdate) / 1000;
+    lastUpdate: Date.now()(offlineTime > 0) {
+  };oDissolveLv * 0.5 * offlineTime;
+  localStorage.setItem('saltLabSave', JSON.stringify(gameState));m += offlineGain;
 }
 function loadGame() {
   const savedGame = localStorage.getItem('saltLabSave');
   if (savedGame) {
-    const gameState = JSON.parse(savedGame);
-    Object.assign(window, gameState);
-    const offlineTime = (Date.now() - gameState.lastUpdate) / 1000;
-    if (offlineTime > 0) {
-      const offlineGain = autoDissolveLv * 0.5 * offlineTime;
-      saltPpm += offlineGain;
-      updateDisplay();
     }
-  }
+  }me, 30000);
 }
-// 自動保存
+// 自動保存r('load', loadGame);
 setInterval(saveGame, 30000);
-// 頁面載入時讀取存檔
+// 頁面載入時讀取存檔, function() {
 window.addEventListener('load', loadGame);
-// 頁面加載時初始化
-window.addEventListener('load', function() {
-  saltPpm = 0;
+// 頁面加載時初始化nitCooldown();
+window.addEventListener('load', function() {eDisplay();
+  saltPpm = 0;s();
   initCooldown();
   updateDisplay();
-  updateUpgradeButtons();
-  startAutoDissolve();
+  updateUpgradeButtons();.now();
+  startAutoDissolve();nFrame(gameLoop);
   updatePrestigeInfo();
   lastUpdateTime = Date.now();
   requestAnimationFrame(gameLoop);
-});
-// 遊戲循環
+});onst now = Date.now();
+// 遊戲循環eltaTime = (now - lastUpdateTime) / 1000;
 function gameLoop() {
   const now = Date.now();
   const deltaTime = (now - lastUpdateTime) / 1000;
-  lastUpdateTime = now;
-  // 自動溶解
+  lastUpdateTime = now; const addAmount = 0.1 * autoDissolveLv * deltaTime;
+  // 自動溶解（自動增加鹽分）tPpm += addAmount;
   if (autoDissolveLv > 0) {
-    const dissolveAmount = 0.1 * autoDissolveLv * deltaTime;
-    saltPpm = Math.max(0, saltPpm - dissolveAmount);
-  }
-  // 自然侵蝕
+    const addAmount = 0.1 * autoDissolveLv * deltaTime;
+    saltPpm += addAmount;
+  } const erosionAmount = 0.05 * naturalErosionLv * deltaTime;
+  // 自然侵蝕sionAmount;
   if (naturalErosionLv > 0) {
     const erosionAmount = 0.05 * naturalErosionLv * deltaTime;
     saltPpm += erosionAmount;
-  }
-  // 蒸發
+  }   const evaporationAmount = 0.02 * evaporationLv * deltaTime;
+  // 蒸發Volume = Math.max(100, waterVolume - evaporationAmount);
   if (evaporationLv > 0) {
-    const evaporationAmount = 0.02 * evaporationLv * deltaTime;
-    waterVolume = Math.max(100, waterVolume - evaporationAmount);
-  }
-  updateDisplay();
-  updateUpgradeButtons();
+    const evaporationAmount = 0.02 * evaporationLv * deltaTime;eDisplay();
+
+
+
+
+
+
+
+
+
+
+</html></body></script>}  requestAnimationFrame(gameLoop);  updatePrestigeInfo();  updateUpgradeButtons();  updateDisplay();  }    waterVolume = Math.max(100, waterVolume - evaporationAmount);  updateUpgradeButtons();
   updatePrestigeInfo();
   requestAnimationFrame(gameLoop);
 }
