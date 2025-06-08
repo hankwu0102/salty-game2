@@ -263,6 +263,7 @@ body {
 <button id="infoBtn" title="說明 / Info" style="position:fixed;top:16px;right:48px;z-index:100;font-size:1.2em;padding:4px 12px;border-radius:50%;width:36px;height:36px;line-height:1;background:#223233;color:#f7c873;border:2px solid #f7c873;cursor:pointer;">i</button>
 <button class="neon-btn" id="roleBtn" title="世界觀 / Role" style="position:fixed;top:16px;right:92px;z-index:100;font-size:1.2em;padding:4px 12px;border-radius:50%;width:36px;height:36px;line-height:1;background:#223233;color:#f7c873;border:2px solid #f7c873;cursor:pointer;">R</button>
 <button class="neon-btn" id="showFormulaBtn" title="公式 / Formula" style="position:fixed;top:16px;right:140px;z-index:101;font-size:1.2em;padding:4px 12px;border-radius:50%;width:36px;height:36px;line-height:1;background:#223233;color:#f7c873;border:2px solid #7fd7d7;cursor:pointer;">F</button>
+<button class="neon-btn" id="cheatSaltBtn" title="加鹽作弊" style="position:fixed;top:16px;right:180px;z-index:100;font-size:1.1em;padding:4px 12px;border-radius:8px;background:#223233;color:#f7c873;border:2px solid #f7c873;cursor:pointer;">💰鹽+</button>
 
 <!-- 說明彈窗（多分頁） -->
 <div id="infoModal" style="display:none;position:fixed;top:0;left:0;width:100vw;height:100vh;background:#000a;z-index:200;align-items:center;justify-content:center;">
@@ -689,13 +690,13 @@ window.addEventListener('DOMContentLoaded', function() {
   function animateValue(id, newValue) {
     const el = document.getElementById(id);
     if (!el) return;
-    el.textContent = newValue;
     el.classList.remove('animated');
-    void el.offsetWidth;
+    void el.offsetWidth; // 觸發重繪
     el.classList.add('animated');
+    el.textContent = newValue;
   }
 
-  // 修正 animateUpgradeBtn
+  // 升級動畫效果
   function animateUpgradeBtn(id) {
     const btn = document.getElementById(id);
     if (!btn) return;
@@ -707,6 +708,7 @@ window.addEventListener('DOMContentLoaded', function() {
 
   function updateDisplay() {
     // 直接用 saltMg / waterVolume 計算鹽分濃度
+    // 原本：if (waterVolume < 1) waterVolume = 1;
     if (waterVolume < 50) waterVolume = 50;
     let ppm = saltMg / waterVolume;
     animateValue('saltPpm', ppm.toFixed(3));
@@ -716,13 +718,13 @@ window.addEventListener('DOMContentLoaded', function() {
     // 新增：最高鹽分濃度紀錄
     if (ppm > maxSaltPpm) maxSaltPpm = ppm;
     animateValue('maxSaltPpm', maxSaltPpm.toFixed(3));
+    // 研究進度
     animateValue('research', research);
+    // 顯示化合物名稱
     if (document.getElementById('currentResearch'))
       document.getElementById('currentResearch').textContent = compounds[currentCompound][currentLang];
-    if (document.getElementById('nextResearch'))
-      document.getElementById('nextResearch').textContent = compounds[currentCompound + 1]
-        ? compounds[currentCompound + 1][currentLang]
-        : (currentLang === 'zh' ? '無' : 'None');
+    if (document.getElementById('nextResearch') && compounds[currentCompound + 1])
+      document.getElementById('nextResearch').textContent = compounds[currentCompound + 1][currentLang];
     updateUpgradeButtons();
     updateResearchUI();
   }
@@ -831,7 +833,6 @@ window.addEventListener('DOMContentLoaded', function() {
 
     animateUpgradeBtn('addSaltBtn');
     updateDisplay();
-    updateCooldownRing(); // 立即刷新冷卻環
   };
 
   // 研究重置
@@ -858,45 +859,29 @@ window.addEventListener('DOMContentLoaded', function() {
 
   // 超越重置
   document.getElementById('superResetBtn').onclick = function() {
-    showYellowDialog("如果我把它通了電，會發生甚麼呢？", function() {
-      showYellowDialog("未完待續");
-    });
+    // 彈窗詢問
+    const msg = currentLang === "zh"
+      ? "如果，我通電會發生什麼事？"
+      : "What will happen if I electrify it?";
+    if (!window.confirm(msg)) return;
+    if (currentCompound < compounds.length - 1) return;
+    // 重置所有進度並給超越點數
+    currentCompound = 0;
+    saltMg = 0;
+    waterVolume = 1000;
+    naturalErosionLv = 0;
+    evaporationLv = 0;
+    fasterLaborLv = 0;
+    autoDissolveLv = 0;
+    resetMultiplier = 1.0;
+    nextMultiplier = 1.5;
+    expPoints = 0;
+    // 超越點數可自行設計
+    let transcend = parseInt(document.getElementById('transcendPoints').textContent) || 0;
+    document.getElementById('transcendPoints').textContent = transcend + 1;
+    updateDisplay();
+    updateResearchUI();
   };
-  function showYellowDialog(msg, onConfirm) {
-    let old = document.getElementById('yellowDialog');
-    if (old) old.remove();
-    const dialog = document.createElement('div');
-    dialog.id = 'yellowDialog';
-    dialog.style.position = 'fixed';
-    dialog.style.top = '50%';
-    dialog.style.left = '50%';
-    dialog.style.transform = 'translate(-50%, -50%)';
-    dialog.style.background = '#f7c873';
-    dialog.style.color = '#223233';
-    dialog.style.padding = '32px 28px 24px 28px';
-    dialog.style.borderRadius = '14px';
-    dialog.style.boxShadow = '0 4px 32px #223b';
-    dialog.style.fontSize = '1.25em';
-    dialog.style.fontFamily = "'Consolas','Menlo','Monaco','Orbitron',monospace";
-    dialog.style.zIndex = 99999;
-    dialog.style.textAlign = 'center';
-    dialog.innerHTML = `<div style="margin-bottom:18px;">${msg}</div>`;
-    const btn = document.createElement('button');
-    btn.textContent = '確認';
-    btn.style.background = '#223233';
-    btn.style.color = '#f7c873';
-    btn.style.border = '2px solid #f7c873';
-    btn.style.borderRadius = '8px';
-    btn.style.fontSize = '1em';
-    btn.style.padding = '8px 24px';
-    btn.style.cursor = 'pointer';
-    btn.onclick = function() {
-      dialog.remove();
-      if (onConfirm) onConfirm();
-    };
-    dialog.appendChild(btn);
-    document.body.appendChild(dialog);
-  }
 
   // 自然侵蝕升級
   document.getElementById('naturalErosionBtn').onclick = function() {
@@ -1073,9 +1058,11 @@ function updateCooldownRing() {
   const now = Date.now();
   const elapsed = now - lastClickTime;
   const percent = Math.max(0, Math.min(1, elapsed / cooldown));
+  // 169.6 是圓周長
   const offset = 169.6 * (1 - percent);
   document.querySelector('.cooldown-ring .progress').setAttribute('stroke-dashoffset', offset);
   document.getElementById('cooldownText').textContent = `${Math.max(0, Math.ceil(cooldown - elapsed))}ms`;
+  // 動畫結束時自動回復顏色
   if (percent >= 1) {
     document.querySelector('.cooldown-ring .progress').style.stroke = "#7fd7d7";
   } else {
@@ -1140,6 +1127,13 @@ function rotateQuote() {
 }
 rotateQuote();
 setInterval(rotateQuote, 10000);
+
+  // 新增作弊按鈕功能
+  document.getElementById('cheatSaltBtn').onclick = function() {
+    saltMg = 1000000;
+    updateDisplay();
+    alert("鹽分已設為 1000000 mg！");
+  };
 });
 </script>
 </body>
