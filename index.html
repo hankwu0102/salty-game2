@@ -296,7 +296,7 @@ body {
 </div>
 
 <!-- 公式顯示按鈕 -->
-<div id="formulaModal" style="display:none;position:fixed;top:0;left:0;width:100vw;height:100vh;background:#000a;z-index=300;align-items:center;justify-content:center;">
+<div id="formulaModal" style="display:none;position:fixed;top:0;left:0;width:100vw;height:100vh;background:#000a;z-index:3000;align-items:center;justify-content:center;">
   <div style="background:#1a2324;border:2px solid #7fd7d7;border-radius:12px;max-width:520px;min-width:320px;padding:0 0 0 0;color:#aee6e6;box-shadow:0 4px 24px #223b;position:relative;display:flex;flex-direction:column;">
     <button id="closeFormula" style="position:absolute;top:10px;right:14px;background:none;border:none;color:#f7c873;font-size:1.3em;cursor:pointer;z-index:2;">×</button>
     <!-- 新增分頁按鈕 -->
@@ -938,11 +938,44 @@ window.addEventListener('DOMContentLoaded', function() {
           precipPanel.style.color = '#aee6e6';
           precipPanel.style.textAlign = 'center';
           precipPanel.innerHTML = `
-            <div style="font-size:2em;margin-bottom:18px;font-weight:bold;">金屬析出</div>
+            <div style="display:flex;flex-direction:column;align-items:center;">
+              <div style="display:flex;align-items:center;gap:12px;margin-bottom:10px;">
+                <button id="inventoryBtn" class="neon-btn" style="font-size:1em;padding:6px 18px;border-radius:8px;background:#223233;color:#7fd7d7;border:2px solid #7fd7d7;cursor:pointer;font-weight:bold;">物品欄</button>
+              </div>
+              <div style="font-size:2em;margin-bottom:18px;font-weight:bold;">金屬析出</div>
+            </div>
+            <div id="precipitateTabs" style="display:none;max-width:400px;margin:0 auto 18px auto;padding:18px 0 18px 0;background:#142024b0;border:1px solid #7fd7d7;border-radius:8px;">
+              <div style="font-size:1.2em;color:#7fd7d7;margin-bottom:8px;">物品欄分頁</div>
+              <div id="inventoryContent" style="color:#aee6e6;text-align:left;max-width:340px;margin:0 auto;">
+                <div><b>岩鹽</b> (NaCl)：<span id="inv_nacl">0</span></div>
+                <div><b>石膏</b> (CaSO₄·2H₂O)：<span id="inv_gypsum">0</span></div>
+                <div><b>硬石膏</b> (CaSO₄)：<span id="inv_anhydrite">0</span></div>
+                <div><b>鉀鹽</b> (KCl)：<span id="inv_kcl">0</span></div>
+                <div><b>鉀鎂鹽</b> (KMgCl₃·6H₂O)：<span id="inv_kmgcl3">0</span></div>
+                <div><b>比紹石</b> (MgCl₂·6H₂O)：<span id="inv_bischofite">0</span></div>
+                <div><b>多鹽石</b> (K₂Ca₂Mg(SO₄)₄·2H₂O)：<span id="inv_polyhalite">0</span></div>
+                <div><b>芒硝</b> (Na₂SO₄·10H₂O)：<span id="inv_glauber">0</span></div>
+                <div><b>瀉鹽</b> (MgSO₄·7H₂O)：<span id="inv_epsomite">0</span></div>
+              </div>
+            </div>
             <div style="background:#142024b0;border:1px solid #7fd7d7;border-radius:8px;max-width:400px;margin:0 auto;padding:18px 0 18px 0;">
               <!-- 反應物欄位 -->
               <div style="font-size:1.1em;color:#7fd7d7;margin-bottom:8px;">反應物</div>
               <div style="display:flex;gap:18px;align-items:center;justify-content:center;margin-bottom:12px;">
+                <div>
+                  <label for="reactantSelect" style="color:#f7c873;">選擇反應物</label>
+                  <select id="reactantSelect" style="width:160px;">
+                    <option value="nacl">岩鹽 (NaCl)</option>
+                    <option value="gypsum">石膏 (CaSO₄·2H₂O)</option>
+                    <option value="anhydrite">硬石膏 (CaSO₄)</option>
+                    <option value="kcl">鉀鹽 (KCl)</option>
+                    <option value="kmgcl3">鉀鎂鹽 (KMgCl₃·6H₂O)</option>
+                    <option value="bischofite">比紹石 (MgCl₂·6H₂O)</option>
+                    <option value="polyhalite">多鹽石 (K₂Ca₂Mg(SO₄)₄·2H₂O)</option>
+                    <option value="glauber">芒硝 (Na₂SO₄·10H₂O)</option>
+                    <option value="epsomite">瀉鹽 (MgSO₄·7H₂O)</option>
+                  </select>
+                </div>
                 <div>
                   <label for="soluteMoleInput" style="color:#f7c873;">溶質莫耳數</label>
                   <input id="soluteMoleInput" type="number" min="0" max="100" value="1" step="0.01" style="width:60px;text-align:right;"> mol
@@ -971,6 +1004,7 @@ window.addEventListener('DOMContentLoaded', function() {
               <div id="precipitateData"></div>
             </div>
           `;
+          
           document.body.appendChild(precipPanel);
 
           // 初始化變數與事件
@@ -990,6 +1024,130 @@ window.addEventListener('DOMContentLoaded', function() {
           };
           document.getElementById('solutionVolumeInput').oninput = function() {
             solutionVolume = parseFloat(this.value) || 0;
+          };
+          const inventoryBtn = precipPanel.querySelector('#inventoryBtn');
+          let inventoryPanel = null;
+          if (inventoryBtn) {
+            inventoryBtn.onclick = function () {
+              // 若已存在則切換顯示/隱藏
+              if (inventoryPanel) {
+                inventoryPanel.style.display = (inventoryPanel.style.display === 'none' ? 'block' : 'none');
+                return;
+              }
+              // 建立物品欄介面
+              inventoryPanel = document.createElement('div');
+              inventoryPanel.id = 'inventoryPanel';
+              inventoryPanel.style.position = 'fixed';
+              inventoryPanel.style.top = '120px';
+              inventoryPanel.style.left = '50%';
+              inventoryPanel.style.transform = 'translateX(-50%)';
+              inventoryPanel.style.background = '#1a2324';
+              inventoryPanel.style.border = '2px solid #7fd7d7';
+              inventoryPanel.style.borderRadius = '12px';
+              inventoryPanel.style.boxShadow = '0 4px 24px #223b';
+              inventoryPanel.style.padding = '28px 32px 24px 32px';
+              inventoryPanel.style.zIndex = '20000';
+              inventoryPanel.style.color = '#aee6e6';
+              inventoryPanel.style.minWidth = '320px';
+              inventoryPanel.style.maxWidth = '90vw';
+              inventoryPanel.innerHTML = `
+                <div style="font-size:1.4em;color:#7fd7d7;margin-bottom:16px;font-weight:bold;">物品欄</div>
+                <div style="text-align:left;line-height:2;">
+                  <div><b>岩鹽</b> (NaCl)：<span id="inv_nacl">0</span></div>
+                  <div><b>石膏</b> (CaSO₄·2H₂O)：<span id="inv_gypsum">0</span></div>
+                  <div><b>硬石膏</b> (CaSO₄)：<span id="inv_anhydrite">0</span></div>
+                  <div><b>鉀鹽</b> (KCl)：<span id="inv_kcl">0</span></div>
+                  <div><b>鉀鎂鹽</b> (KMgCl₃·6H₂O)：<span id="inv_kmgcl3">0</span></div>
+                  <div><b>比紹石</b> (MgCl₂·6H₂O)：<span id="inv_bischofite">0</span></div>
+                  <div><b>多鹽石</b> (K₂Ca₂Mg(SO₄)₄·2H₂O)：<span id="inv_polyhalite">0</span></div>
+                  <div><b>芒硝</b> (Na₂SO₄·10H₂O)：<span id="inv_glauber">0</span></div>
+                  <div><b>瀉鹽</b> (MgSO₄·7H₂O)：<span id="inv_epsomite">0</span></div>
+                </div>
+                <button id="closeInventoryBtn" class="neon-btn" style="margin-top:18px;padding:6px 22px;">關閉</button>
+              `;
+              document.body.appendChild(inventoryPanel);
+              // 關閉按鈕
+              inventoryPanel.querySelector('#closeInventoryBtn').onclick = function() {
+                inventoryPanel.style.display = 'none';
+              };
+            };
+          }
+
+          // 1. 在反應物區塊下方插入「合成」按鈕
+          const reactantDiv = precipPanel.querySelector('#reactantSelect').parentElement.parentElement;
+          const synthBtn = document.createElement('button');
+          synthBtn.id = 'synthesizeBtn';
+          synthBtn.className = 'neon-btn';
+          synthBtn.style.marginLeft = '18px';
+          synthBtn.textContent = '合成';
+          reactantDiv.appendChild(synthBtn);
+
+          // 2. 建立物品欄數據（如未有可自行補上）
+          let inventory = {
+            nacl: 0,
+            gypsum: 0,
+            anhydrite: 0,
+            kcl: 0,
+            kmgcl3: 0,
+            bischofite: 0,
+            polyhalite: 0,
+            glauber: 0,
+            epsomite: 0
+          };
+
+          // 3. 合成邏輯
+          synthBtn.onclick = function() {
+            const reactant = document.getElementById('reactantSelect').value;
+            const solVol = parseFloat(document.getElementById('solutionVolumeInput').value) || 0;
+            const temp = parseFloat(document.getElementById('tempInput').value) || 0;
+            const voltage = parseFloat(document.getElementById('voltageInput').value) || 0;
+            const pressure = parseFloat(document.getElementById('pressureInput').value) || 0;
+
+            // 條件判斷
+            let condCount = 0;
+            if (reactant === 'nacl') {
+              if (solVol === 0) condCount++;
+              if (temp > 600 && temp < 900) condCount++;
+              if (voltage > 5 && voltage < 8) condCount++;
+              if (pressure === 1) condCount++;
+            } else if (reactant === 'kcl') {
+              if (solVol === 0) condCount++;
+              if (temp > 600) condCount++;
+              if (voltage > 1 && voltage < 3) condCount++;
+              if (pressure === 1) condCount++;
+            } else if (reactant === 'gypsum' || reactant === 'anhydrite') {
+              if (solVol > 0) condCount++;
+              if (temp > 60 && temp < 100) condCount++;
+              if (voltage > 2 && voltage < 3) condCount++;
+              if (pressure === 1) condCount++;
+            } else if (reactant === 'kmgcl3' || reactant === 'bischofite') {
+              if (solVol === 0) condCount++;
+              if (temp > 200) condCount++;
+              if (voltage > 3 && voltage < 5) condCount++;
+              if (pressure === 1) condCount++;
+            } else if (reactant === 'glauber' || reactant === 'epsomite') {
+              // 芒硝 或 瀉鹽
+              if (solVol === 0) condCount++;
+              if (temp > 500) condCount++;
+              if (voltage > 4 && voltage < 6) condCount++;
+              if (pressure === 1) condCount++;
+            }
+            // 依條件數給機率
+            let prob = 0.2 * condCount;
+            if (prob > 0) {
+              if (Math.random() < prob) {
+                inventory[reactant] = (inventory[reactant] || 0) + 1;
+                // 更新所有物品欄顯示（所有同名 id 都要更新）
+                document.querySelectorAll('#inv_' + reactant).forEach(function(invSpan) {
+                  invSpan.textContent = inventory[reactant];
+                });
+                alert('合成成功！');
+              } else {
+                alert('合成失敗，請再嘗試。');
+              }
+            } else {
+              alert('條件未達成，請調整參數。');
+            }
           };
         }
         precipPanel.style.display = '';
@@ -1053,7 +1211,7 @@ window.addEventListener('DOMContentLoaded', function() {
 
   // 頁面載入時初始化
   updateResearchUI();
-  // translateAll 只更新文字，不要用 innerHTML 直接覆蓋按鈕
+   // translateAll 只更新文字，不要用 innerHTML 直接覆蓋按鈕
   function translateAll() {
     const lang = langData[currentLang];
     // 1. 直接覆蓋所有有 data-zh/data-en 的元素
@@ -1253,7 +1411,7 @@ startCooldownLoop();
 // 自動溶解效果
 setInterval(function() {
   if (autoDissolveLv > 0) {
-    // 只更新數值，不觸發動畫
+    // 只更新數值，不觸发動畫
     let saltAdd = getAutoDissolvePerSec() * resetMultiplier / 10; // 每100ms加1/10
     saltMg += saltAdd;
     // 只更新內容，不呼叫 animateValue
