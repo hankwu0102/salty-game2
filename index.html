@@ -2,7 +2,7 @@
 <html lang="zh-Hant">
 <head>
 <meta charset="UTF-8">
-<title>鹽分實驗室</title>
+<title>鹽類實驗室</title>
 <!-- Orbitron 字型 -->
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700&display=swap" rel="stylesheet">
 <style>
@@ -54,44 +54,107 @@ body {
   margin-bottom: 20px;
   border-radius: 8px;
   font-family: 'Consolas', 'Menlo', 'Monaco', 'Orbitron', monospace;
+  font-size: 1.15em;
+  /* 新增動畫 */
+  animation: fadeInDisplay 0.7s;
 }
+@keyframes fadeInDisplay {
+  from { opacity: 0; transform: translateY(-20px);}
+  to { opacity: 1; transform: translateY(0);}
+}
+/* 統一資源面板字型大小 */
+#currency-row span,
+#currency-row #saltPpm,
+#currency-row #waterVolume,
+#currency-row #expPoints,
+#currency-row #research,
+#currency-row #saltTotal {
+  font-size: 1.15em !important;
+  vertical-align: middle;
+  /* ↓↓↓ 新增 ↓↓↓ */
+  margin-right: 0.2em;
+  margin-left: 0.1em;
+}
+#currency-row {
+  font-size: 1.15em;
+  letter-spacing: 0.5px;
+}
+#saltPpm, #waterVolume, #expPoints, #research, #saltTotal {
+  font-variant-numeric: tabular-nums;
+  font-family: 'Consolas', 'Menlo', 'Monaco', monospace;
+  letter-spacing: 0.01em; /* 原本 0.03em，改小 */
+  min-width: 5.5em;       /* 原本 7.5em，改小 */
+  display: inline-block;
+  text-align: right;
+  font-size: 1.3em;       /* 原本 1.5em，改小 */
+  line-height: 1.2;
+  vertical-align: middle;
+  transition: color 0.3s;
+  margin-right: 0.2em;    /* 新增，縮小間距 */
+  margin-left: 0.1em;
+}
+#saltPpm.animated, #waterVolume.animated, #expPoints.animated, #research.animated, #saltTotal.animated {
+  color: #f7c873;
+  animation: popNum 0.4s;
+}
+@keyframes popNum {
+  0% { color: #fff; transform: scale(1);}
+  30% { color: #f7c873; transform: scale(1.18);}
+  100% { color: #f7c873; transform: scale(1);}
+}
+/* 升級按鈕動畫與高亮 */
 .upgrade .neon-btn {
   text-align: left;
   padding: 10px;
   margin: 5px 0;
   width: 100%;
-}
-.cooldown-container {
+  transition: box-shadow 0.2s, border-color 0.2s, background 0.2s;
+  box-shadow: 0 0 12px #7fd7d755, 0 2px 8px #223b;
   position: relative;
-  display: inline-block;
-  margin: 10px 0;
+  overflow: hidden;
 }
+.upgrade .neon-btn:active {
+  box-shadow: 0 0 24px #f7c87399, 0 2px 8px #223b;
+  border-color: #f7c873;
+  background: linear-gradient(90deg, #2e1a24 60%, #1a2324 100%);
+}
+.upgrade .neon-btn.upgraded {
+  border-color: #f7c873;
+  box-shadow: 0 0 24px #f7c87399, 0 2px 8px #223b;
+  animation: upgradeFlash 0.5s;
+}
+@keyframes upgradeFlash {
+  0% { box-shadow: 0 0 0 #f7c87300;}
+  50% { box-shadow: 0 0 32px #f7c873cc;}
+  100% { box-shadow: 0 0 24px #f7c87399;}
+}
+/* 冷卻圈動畫修正 */
 .cooldown-ring {
   width: 60px;
   height: 60px;
   position: relative;
+  /* 修正為圓形 pulse */
+  animation: pulseRingCircle 1.5s infinite alternate;
+  border-radius: 50%;
 }
-.cooldown-ring svg {
-  transform: rotate(-90deg);
-}
-.cooldown-ring circle {
-  fill: none;
-  stroke-width: 4;
-}
-.cooldown-ring .background {
-  stroke: #3a5c5c;
+@keyframes pulseRingCircle {
+  0% { box-shadow: 0 0 0 0 #7fd7d700; }
+  100% { box-shadow: 0 0 24px 8px #7fd7d7cc; }
 }
 .cooldown-ring .progress {
   stroke: #7fd7d7;
+  transition: stroke-dashoffset 0.1s linear;
 }
 .cooldown-text {
   position: absolute;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  font-size: 0.9em;
-  color: #aee6e6;
+  font-size: 1em;
+  color: #f7c873;
   font-family: 'Consolas', 'Menlo', 'Monaco', 'Orbitron', monospace;
+  text-shadow: 0 0 6px #223, 0 0 2px #fff2;
+  pointer-events: none;
 }
 .version {
   position: fixed;
@@ -152,11 +215,11 @@ body {
 #saltPpm, #waterVolume, #expPoints, #research {
   font-variant-numeric: tabular-nums;
   font-family: 'Consolas', 'Menlo', 'Monaco', monospace;
-  letter-spacing: 0.03em;
-  min-width: 7.5em;
+  letter-spacing: 0.01em; /* 原本 0.03em，改小 */
+  min-width: 5.5em;       /* 原本 7.5em，改小 */
   display: inline-block;
   text-align: right;
-  font-size: 1.5em;
+  font-size: 1.3em;       /* 原本 1.5em，改小 */
   line-height: 1.2;
   vertical-align: middle;
 }
@@ -199,6 +262,7 @@ body {
 <button class="neon-btn language-switch" id="langSwitch">English</button>
 <button id="infoBtn" title="說明 / Info" style="position:fixed;top:16px;right:48px;z-index:100;font-size:1.2em;padding:4px 12px;border-radius:50%;width:36px;height:36px;line-height:1;background:#223233;color:#f7c873;border:2px solid #f7c873;cursor:pointer;">i</button>
 <button class="neon-btn" id="roleBtn" title="世界觀 / Role" style="position:fixed;top:16px;right:92px;z-index:100;font-size:1.2em;padding:4px 12px;border-radius:50%;width:36px;height:36px;line-height:1;background:#223233;color:#f7c873;border:2px solid #f7c873;cursor:pointer;">R</button>
+<button class="neon-btn" id="showFormulaBtn" title="公式 / Formula" style="position:fixed;top:16px;right:140px;z-index:101;font-size:1.2em;padding:4px 12px;border-radius:50%;width:36px;height:36px;line-height:1;background:#223233;color:#f7c873;border:2px solid #7fd7d7;cursor:pointer;">F</button>
 
 <!-- 說明彈窗（多分頁） -->
 <div id="infoModal" style="display:none;position:fixed;top:0;left:0;width:100vw;height:100vh;background:#000a;z-index:200;align-items:center;justify-content:center;">
@@ -233,8 +297,19 @@ body {
   </div>
 </div>
 
+<!-- 公式顯示按鈕 -->
+<button class="neon-btn" id="showFormulaBtn" title="公式 / Formula" style="position:fixed;top:16px;right:140px;z-index:101;font-size:1.2em;padding:4px 12px;border-radius:50%;width:36px;height:36px;line-height:1;background:#223233;color:#f7c873;border:2px solid #7fd7d7;cursor:pointer;">F</button>
+<div id="formulaModal" style="display:none;position:fixed;top:0;left:0;width:100vw;height:100vh;background:#000a;z-index:300;align-items:center;justify-content:center;">
+  <div style="background:#1a2324;border:2px solid #7fd7d7;border-radius:12px;max-width:520px;min-width:320px;padding:0 0 0 0;color:#aee6e6;box-shadow:0 4px 24px #223b;position:relative;display:flex;flex-direction:column;">
+    <button id="closeFormula" style="position:absolute;top:10px;right:14px;background:none;border:none;color:#f7c873;font-size:1.3em;cursor:pointer;z-index:2;">×</button>
+    <div style="padding:24px 28px 24px 28px;max-height:70vh;overflow-y:auto;">
+      <div id="formulaContent"></div>
+    </div>
+  </div>
+</div>
+
 <div class="container">
-  <div class="game-title" data-zh="鹽分實驗室" data-en="Salt Laboratory">鹽分實驗室</div>
+  <div class="game-title" data-zh="鹽類實驗室" data-en="Salt Laboratory">鹽類實驗室</div>
   <div class="game-desc" data-zh="你是一位鹽分研究員，正在研究不同鹽類在水中的溶解度..." data-en="You are a salt researcher studying the solubility of different salts in water...">你是一位鹽分研究員，正在研究不同鹽類在水中的溶解度...</div>
   <div class="peaceful-tip" data-zh="慢慢來，享受每一滴水的變化。" data-en="Take it slow and enjoy every drop.">慢慢來，享受每一滴水的變化。</div>
   
@@ -277,12 +352,20 @@ body {
       <span id="expPoints">0</span> |
       <span data-zh="研究進度：" data-en="Research Progress: ">研究進度：</span>
       <span id="research">0</span>%
+      <!-- 新增：鹽分總量顯示 -->
+      | <span data-zh="鹽分總量：" data-en="Total Salt: ">鹽分總量：</span>
+      <span id="saltTotal">0</span> mg
     </div>
     <div id="prestigeReqRow" style="margin-top:8px;font-size:1.1em;">
       <span data-zh="下次研究需要：" data-en="Next research requires: ">下次研究需要：</span>
       <span id="prestigeReqPpm" style="font-family:'Consolas','Menlo','Monaco',monospace;">1000.000</span> mg/L
       <span data-zh="（目前：" data-en="(Current: " >（目前：</span>
       <span id="currentPpm" style="font-family:'Consolas','Menlo','Monaco',monospace;">0.000</span> mg/L)
+    </div>
+    <!-- 新增：最大鹽分濃度紀錄 -->
+    <div id="maxPpmRow" style="margin-top:4px;font-size:0.98em;color:#f7c873;">
+      <span data-zh="歷史最高鹽分濃度：" data-en="Max Salt Concentration: ">歷史最高鹽分濃度：</span>
+      <span id="maxSaltPpm">0.000</span> mg/L
     </div>
   </div>
   <div class="upgrade">
@@ -392,7 +475,7 @@ body {
   </div>
   <!-- 新增更高層的重置（超越） -->
   <div class="reset-layer" id="superResetLayer">
-    <h3 data-zh="超越重置" data-en="Transcend Reset">超越重置</h3>
+    <h3 data-zh="研究突破" data-en="Transcend Reset">研究突破</h3>
     <div>
       <span data-zh="當前超越點數：" data-en="Transcend Points: ">當前超越點數：</span>
       <span id="transcendPoints">0</span>
@@ -401,7 +484,7 @@ body {
       <span data-zh="需要所有研究達到最大並重置：" data-en="Requires all research maxed and reset: ">需要所有研究達到最大並重置：</span>
       <span id="superResetReq" style="color:#b3f0f0">0/5</span>
     </div>
-    <button class="reset-btn" id="superResetBtn" data-zh="執行超越" data-en="Transcend Now" disabled>執行超越</button>
+    <button class="reset-btn" id="superResetBtn" data-zh="突破" data-en="Transcend Now" disabled>突破</button>
     <div style="margin-top:10px;font-size:0.95em;color:#b5cfcf;" data-zh="超越後將獲得永久加成，並重置所有進度。" data-en="Transcend for permanent bonus, resets all progress.">超越後將獲得永久加成，並重置所有進度。</div>
     <div style="margin-top:14px;color:#ff4444;font-weight:bold;font-size:1em;">
       ⚠️ 超越會重置所有進度，請謹慎操作！
@@ -426,7 +509,7 @@ window.addEventListener('DOMContentLoaded', function() {
   // 多語言資料
   const langData = {
     zh: {
-      title: "鹽分實驗室",
+      title: "鹽類實驗室",
       desc: "你是一位鹽分研究員，正在研究不同鹽類在水中的溶解度...",
       tip: "慢慢來，享受每一滴水的變化。",
       info: `
@@ -486,10 +569,10 @@ window.addEventListener('DOMContentLoaded', function() {
       afterReset: "重置後獲得：",
       nextResearchPpm: "下次研究所需濃度：",
       resetResearch: "重置研究",
-      transcendReset: "超越重置",
+      transcendReset: "研究突破",
       transcendPoints: "當前超越點數：",
       transcendReq: "需要所有研究達到最大並重置：",
-      transcendNow: "執行超越",
+      transcendNow: "突破",
       transcendTip: "超越後將獲得永久加成，並重置所有進度。",
       transcendWarn: "⚠️ 超越會重置所有進度，請謹慎操作！",
       upgradeBy: "升級名稱由 you_3009 提供",
@@ -584,15 +667,64 @@ window.addEventListener('DOMContentLoaded', function() {
   let clickCooldown = 1000;
   let lastClickTime = 0;
 
-  // 顯示更新
+  // 研究物質名稱
+  const compounds = [
+    { zh: "氯化鈉 (NaCl)", en: "Sodium Chloride (NaCl)" },
+    { zh: "硝酸鉀 (KNO₃)", en: "Potassium Nitrate (KNO₃)" },
+    { zh: "硫酸鎂 (MgSO₄)", en: "Magnesium Sulfate (MgSO₄)" },
+    { zh: "醋酸鈉 (CH₃COONa)", en: "Sodium Acetate (CH₃COONa)" },
+    { zh: "碳酸鈉 (Na₂CO₃)", en: "Sodium Carbonate (Na₂CO₃)" },
+    { zh: "氯化鉀 (KCl)", en: "Potassium Chloride (KCl)" },
+    { zh: "硫酸銨 ((NH₄)₂SO₄)", en: "Ammonium Sulfate ((NH₄)₂SO₄)" },
+    { zh: "硝酸鈉 (NaNO₃)", en: "Sodium Nitrate (NaNO₃)" },
+    { zh: "氯化鈣 (CaCl₂)", en: "Calcium Chloride (CaCl₂)" },
+    { zh: "硫酸鈉 (Na₂SO₄)", en: "Sodium Sulfate (Na₂SO₄)" }
+  ];
+  let currentCompound = 0;
+
+  // 新增：最高鹽分濃度紀錄
+  let maxSaltPpm = 0;
+
+  // 數值動畫效果
+  function animateValue(id, newValue) {
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.textContent = newValue;
+    el.classList.remove('animated');
+    void el.offsetWidth;
+    el.classList.add('animated');
+  }
+
+  // 修正 animateUpgradeBtn
+  function animateUpgradeBtn(id) {
+    const btn = document.getElementById(id);
+    if (!btn) return;
+    btn.classList.remove('upgraded');
+    void btn.offsetWidth;
+    btn.classList.add('upgraded');
+    setTimeout(() => btn.classList.remove('upgraded'), 500);
+  }
+
   function updateDisplay() {
-    let ppm = waterVolume > 0 ? saltMg / waterVolume : 0;
-    document.getElementById('saltPpm').textContent = ppm.toFixed(3);
-    document.getElementById('waterVolume').textContent = waterVolume.toFixed(1);
-    document.getElementById('expPoints').textContent = expPoints;
-    document.getElementById('research').textContent = research;
-    document.getElementById('currentPpm').textContent = ppm.toFixed(3);
+    // 直接用 saltMg / waterVolume 計算鹽分濃度
+    if (waterVolume < 50) waterVolume = 50;
+    let ppm = saltMg / waterVolume;
+    animateValue('saltPpm', ppm.toFixed(3));
+    animateValue('waterVolume', waterVolume.toFixed(1));
+    animateValue('expPoints', expPoints);
+    animateValue('saltTotal', saltMg.toFixed(2));
+    // 新增：最高鹽分濃度紀錄
+    if (ppm > maxSaltPpm) maxSaltPpm = ppm;
+    animateValue('maxSaltPpm', maxSaltPpm.toFixed(3));
+    animateValue('research', research);
+    if (document.getElementById('currentResearch'))
+      document.getElementById('currentResearch').textContent = compounds[currentCompound][currentLang];
+    if (document.getElementById('nextResearch'))
+      document.getElementById('nextResearch').textContent = compounds[currentCompound + 1]
+        ? compounds[currentCompound + 1][currentLang]
+        : (currentLang === 'zh' ? '無' : 'None');
     updateUpgradeButtons();
+    updateResearchUI();
   }
 
   function updateUpgradeButtons() {
@@ -603,110 +735,213 @@ window.addEventListener('DOMContentLoaded', function() {
     document.getElementById('evaporationLv').textContent = evaporationLv;
     document.getElementById('fasterLaborEffect').textContent = getFasterLaborCooldown().toFixed(0);
     document.getElementById('fasterLaborLv').textContent = fasterLaborLv;
+    // 顯示每秒自動添加的 mg
     document.getElementById('autoDissolveEffect').textContent = getAutoDissolvePerSec().toFixed(1);
     document.getElementById('autoDissolveLv').textContent = autoDissolveLv;
-    document.getElementById('naturalErosionCost').textContent = getUpgradeCost(naturalErosionLv).toFixed(3) + " mg/L";
-    document.getElementById('evaporationCost').textContent = getUpgradeCost(evaporationLv).toFixed(3) + " mg/L";
-    // fasterLabor 升級成本用 25 成長，顯示時用科學記號
-    let fasterLaborCost = 0.001 * Math.pow(25, fasterLaborLv);
-    document.getElementById('fasterLaborCost').textContent = 
+    document.getElementById('naturalErosionCost').textContent = getUpgradeCost(naturalErosionLv, 'normal').toFixed(3) + " mg/L";
+    document.getElementById('evaporationCost').textContent = getUpgradeCost(evaporationLv, 'normal').toFixed(3) + " mg/L";
+    let fasterLaborCost = getUpgradeCost(fasterLaborLv, 'faster');
+    document.getElementById('fasterLaborCost').textContent =
       (fasterLaborCost >= 100000 ? fasterLaborCost.toExponential(3) : fasterLaborCost.toFixed(3)) + " mg/L";
-    document.getElementById('autoDissolveCost').textContent = getUpgradeCost(autoDissolveLv).toFixed(3) + " mg/L";
-    document.getElementById('naturalErosionBtn').disabled = ppm < getUpgradeCost(naturalErosionLv);
-    document.getElementById('evaporationBtn').disabled = ppm < getUpgradeCost(evaporationLv);
+    document.getElementById('autoDissolveCost').textContent = getUpgradeCost(autoDissolveLv, 'auto').toFixed(3) + " mg/L";
+    document.getElementById('naturalErosionBtn').disabled = ppm < getUpgradeCost(naturalErosionLv, 'normal');
+    document.getElementById('evaporationBtn').disabled = ppm < getUpgradeCost(evaporationLv, 'normal');
     document.getElementById('fasterLaborBtn').disabled = ppm < fasterLaborCost;
-    document.getElementById('autoDissolveBtn').disabled = ppm < getUpgradeCost(autoDissolveLv);
+    document.getElementById('autoDissolveBtn').disabled = ppm < getUpgradeCost(autoDissolveLv, 'auto');
   }
 
-  function getUpgradeCost(lv) { 
-    // 讓加速勞動（fasterLabor）升級成本成長更快
-    // 其他升級維持原本 1.7 成長，fasterLabor 用 2.5 成長
-    if (arguments.callee.caller && arguments.callee.caller.name === "updateUpgradeButtons") {
-      // 這裡不區分，直接用下方的方式
-    }
-    // 判斷呼叫來源，如果是 fasterLaborBtn 則用更高倍率
-    // 但更簡單的方式是直接在升級時判斷
-    return 0.001 * Math.pow(
-      (arguments.callee.caller && arguments.callee.caller.toString().includes('fasterLaborLv')) ? 2.5 : 1.7, 
-      lv
-    );
+  function getUpgradeCost(lv, type) { 
+    let base = 0.001;
+    let multi = 2;
+    if (type === 'auto') multi = 10;
+    // fasterLabor 使用 15 倍
+    if (type === 'faster') multi = 15;
+    return base * Math.pow(multi, lv);
   }
   function getNaturalErosionMult() { 
-    // 超強點擊倍率
-    return 10 + naturalErosionLv * 50; 
+    // 點擊基礎倍率提高
+    return 50 + naturalErosionLv * 100; 
   }
   function getEvaporationAmount() { return 1 + evaporationLv * 2.5; }
   function getFasterLaborCooldown() { return Math.max(50, 1000 - fasterLaborLv * 180); }
-  function getAutoDissolvePerSec() { return autoDissolveLv * 0.3; }
+  function getEffectiveWaterVolume() {
+    // 若水量低於 50L，進行 softcap，避免鹽分產量爆炸
+    if (waterVolume < 50) {
+      // 讓有效水量 = 50 * (waterVolume / 50)^0.5，越低越難降
+      return Math.max(1, 50 * Math.pow(waterVolume / 50, 0.5));
+    }
+    return waterVolume;
+  }
+  function getSaltAddAmount() {
+    // 每次點擊實際添加的鹽分量（mg）
+    let addPpm = 0.001 * getNaturalErosionMult();
+    let addAmount = addPpm * getEffectiveWaterVolume();
+    return addAmount;
+  }
 
-  // 只用事件代理監聽所有按鈕
-  document.addEventListener('click', function(e) {
-    // 添加鹽分
-    if (e.target.closest('#addSaltBtn')) {
-      let now = Date.now();
-      if (now - lastClickTime < clickCooldown) return;
-      lastClickTime = now;
-      let addPpm = 0.001 * getNaturalErosionMult();
-      let addAmount = addPpm * waterVolume;
-      saltMg += addAmount;
-      let evap = getEvaporationAmount();
-      waterVolume = Math.max(75, waterVolume - evap);
-      clickCooldown = getFasterLaborCooldown();
-      updateDisplay();
-      document.getElementById('addSaltBtn').disabled = true;
-      let cooldownRing = document.querySelector('.cooldown-ring .progress');
-      let cooldownText = document.getElementById('cooldownText');
-      let start = Date.now();
-      function animateCooldown() {
-        let elapsed = Date.now() - start;
-        let remain = Math.max(0, clickCooldown - elapsed);
-        let percent = remain / clickCooldown;
-        cooldownRing.style.strokeDashoffset = (169.6 * percent).toString();
-        cooldownText.textContent = remain > 0 ? `${Math.ceil(remain)}ms` : 'Ready';
-        if (remain > 0) {
-          requestAnimationFrame(animateCooldown);
-        } else {
-          document.getElementById('addSaltBtn').disabled = false;
-        }
-      }
-      animateCooldown();
-    }
-    // 升級
-    if (e.target.closest('#naturalErosionBtn')) {
-      let ppm = waterVolume > 0 ? saltMg / waterVolume : 0;
-      let cost = getUpgradeCost(naturalErosionLv);
-      if (ppm < cost) return;
-      saltMg -= cost * waterVolume;
-      naturalErosionLv++;
-      updateDisplay();
-    }
-    if (e.target.closest('#evaporationBtn')) {
-      let ppm = waterVolume > 0 ? saltMg / waterVolume : 0;
-      let cost = getUpgradeCost(evaporationLv);
-      if (ppm < cost) return;
-      saltMg -= cost * waterVolume;
-      evaporationLv++;
-      updateDisplay();
-    }
-    if (e.target.closest('#fasterLaborBtn')) {
-      let ppm = waterVolume > 0 ? saltMg / waterVolume : 0;
-      // fasterLabor 升級成本用 25 成長
-      let cost = 0.001 * Math.pow(25, fasterLaborLv);
-      if (ppm < cost) return;
-      saltMg -= cost * waterVolume;
-      fasterLaborLv++;
-      updateDisplay();
-    }
-    if (e.target.closest('#autoDissolveBtn')) {
-      let ppm = waterVolume > 0 ? saltMg / waterVolume : 0;
-      let cost = getUpgradeCost(autoDissolveLv);
-      if (ppm < cost) return;
-      saltMg -= cost * waterVolume;
-      autoDissolveLv++;
-      updateDisplay();
-    }
-  });
+  function getAutoDissolvePerSec() {
+    // 公式：鹽分添加量 * (1000/點擊冷卻ms) * (1000/剩餘水量) * (0.3*自動溶解等級)
+    if (autoDissolveLv === 0) return 0;
+    let saltAddAmount = getSaltAddAmount();
+    let cooldown = getFasterLaborCooldown(); // ms
+    let L = getEffectiveWaterVolume();
+    let perLv = 0.3 * autoDissolveLv;
+    return saltAddAmount * (1000 / cooldown) * (1000 / L) * perLv;
+  }
 
+  // --- 研究進階與超越重置邏輯 ---
+
+  // 研究倍率與門檻
+  let resetMultiplier = 1.0;
+  let nextMultiplier = 1.5;
+  const researchThresholds = [1000, 2000, 4000, 8000, 16000, 32000, 64000, 128000, 256000, 512000];
+
+  // 更新研究進度顯示
+  function updateResearchUI() {
+    // 研究進度百分比
+    let ppm = waterVolume > 0 ? saltMg / waterVolume : 0;
+    let req = researchThresholds[currentCompound] || 1000;
+    let percent = Math.min(100, (ppm / req) * 100);
+    document.getElementById('research').textContent = percent.toFixed(1);
+    document.getElementById('prestigeReqPpm').textContent = req.toFixed(3);
+    document.getElementById('nextResearchPpm').textContent = req.toFixed(3);
+    document.getElementById('resetMultiplier').textContent = resetMultiplier.toFixed(1);
+    document.getElementById('nextMultiplier').textContent = nextMultiplier.toFixed(1);
+    // 超越條件顯示
+    document.getElementById('superResetReq').textContent = `${currentCompound}/${compounds.length}`;
+    // 超越按鈕啟用條件
+    document.getElementById('superResetBtn').disabled = !(currentCompound >= compounds.length - 1);
+  }
+
+  // 點擊添加鹽分時給實驗點數
+  const oldAddSalt = document.getElementById('addSaltBtn').onclick;
+  document.getElementById('addSaltBtn').onclick = function() {
+    // 冷卻判斷
+    const now = Date.now();
+    if (now - lastClickTime < getFasterLaborCooldown()) return;
+    lastClickTime = now;
+
+    // 計算添加鹽分量
+    const addAmount = getSaltAddAmount();
+    saltMg += addAmount * resetMultiplier; // 研究倍率加成
+    // 扣除水量
+    waterVolume = Math.max(0, waterVolume - getEvaporationAmount());
+    // 增加實驗點數
+    expPoints += 1;
+
+    animateUpgradeBtn('addSaltBtn');
+    updateDisplay();
+    updateCooldownRing(); // 立即刷新冷卻環
+  };
+
+  // 研究重置
+  document.getElementById('resetBtn').onclick = function() {
+    let ppm = waterVolume > 0 ? saltMg / waterVolume : 0;
+    let req = researchThresholds[currentCompound] || 1000;
+    if (ppm < req) return;
+    // 進階到下一個化學物質
+    if (currentCompound < compounds.length - 1) {
+      currentCompound++;
+      saltMg = 0;
+      waterVolume = 1000;
+      naturalErosionLv = 0;
+      evaporationLv = 0;
+      fasterLaborLv = 0;
+      autoDissolveLv = 0;
+      resetMultiplier = nextMultiplier;
+      nextMultiplier = (nextMultiplier * 1.5).toFixed(2) * 1;
+      expPoints = 0;
+      updateDisplay();
+      updateResearchUI();
+    }
+  };
+
+  // 超越重置
+  document.getElementById('superResetBtn').onclick = function() {
+    showYellowDialog("如果我把它通了電，會發生甚麼呢？", function() {
+      showYellowDialog("未完待續");
+    });
+  };
+  function showYellowDialog(msg, onConfirm) {
+    let old = document.getElementById('yellowDialog');
+    if (old) old.remove();
+    const dialog = document.createElement('div');
+    dialog.id = 'yellowDialog';
+    dialog.style.position = 'fixed';
+    dialog.style.top = '50%';
+    dialog.style.left = '50%';
+    dialog.style.transform = 'translate(-50%, -50%)';
+    dialog.style.background = '#f7c873';
+    dialog.style.color = '#223233';
+    dialog.style.padding = '32px 28px 24px 28px';
+    dialog.style.borderRadius = '14px';
+    dialog.style.boxShadow = '0 4px 32px #223b';
+    dialog.style.fontSize = '1.25em';
+    dialog.style.fontFamily = "'Consolas','Menlo','Monaco','Orbitron',monospace";
+    dialog.style.zIndex = 99999;
+    dialog.style.textAlign = 'center';
+    dialog.innerHTML = `<div style="margin-bottom:18px;">${msg}</div>`;
+    const btn = document.createElement('button');
+    btn.textContent = '確認';
+    btn.style.background = '#223233';
+    btn.style.color = '#f7c873';
+    btn.style.border = '2px solid #f7c873';
+    btn.style.borderRadius = '8px';
+    btn.style.fontSize = '1em';
+    btn.style.padding = '8px 24px';
+    btn.style.cursor = 'pointer';
+    btn.onclick = function() {
+      dialog.remove();
+      if (onConfirm) onConfirm();
+    };
+    dialog.appendChild(btn);
+    document.body.appendChild(dialog);
+  }
+
+  // 自然侵蝕升級
+  document.getElementById('naturalErosionBtn').onclick = function() {
+    let ppm = waterVolume > 0 ? saltMg / waterVolume : 0;
+    let cost = getUpgradeCost(naturalErosionLv, 'normal');
+    if (ppm < cost) return;
+    saltMg -= cost * waterVolume;
+    naturalErosionLv++;
+    animateUpgradeBtn('naturalErosionBtn');
+    updateDisplay();
+  };
+  // 蒸發升級
+  document.getElementById('evaporationBtn').onclick = function() {
+    let ppm = waterVolume > 0 ? saltMg / waterVolume : 0;
+    let cost = getUpgradeCost(evaporationLv, 'normal');
+    if (ppm < cost) return;
+    saltMg -= cost * waterVolume;
+    evaporationLv++;
+    animateUpgradeBtn('evaporationBtn');
+    updateDisplay();
+  };
+  // 加速勞動升級
+  document.getElementById('fasterLaborBtn').onclick = function() {
+    let ppm = waterVolume > 0 ? saltMg / waterVolume : 0;
+    let cost = getUpgradeCost(fasterLaborLv, 'faster');
+    if (ppm < cost) return;
+    saltMg -= cost * waterVolume;
+    fasterLaborLv++;
+    animateUpgradeBtn('fasterLaborBtn');
+    updateDisplay();
+    startCooldownLoop(); // 冷卻變更時重啟冷卻動畫
+  };
+  // 自動溶解升級
+  document.getElementById('autoDissolveBtn').onclick = function() {
+    let ppm = waterVolume > 0 ? saltMg / waterVolume : 0;
+    let cost = getUpgradeCost(autoDissolveLv, 'auto');
+    if (ppm < cost) return;
+    saltMg -= cost * waterVolume;
+    autoDissolveLv++;
+    animateUpgradeBtn('autoDissolveBtn');
+    updateDisplay();
+  };
+
+  // 頁面載入時初始化
+  updateResearchUI();
   // translateAll 只更新文字，不要用 innerHTML 直接覆蓋按鈕
   function translateAll() {
     const lang = langData[currentLang];
@@ -721,11 +956,13 @@ window.addEventListener('DOMContentLoaded', function() {
     if (footer) footer.textContent = lang.copyright;
     // 3. 其他動態內容（如彈窗）也直接覆蓋
     document.getElementById('langSwitch').textContent = currentLang === "zh" ? "English" : "中文";
+    document.title = lang.title;
   }
 
   // 彈窗開關
   document.getElementById('infoBtn').onclick = function() {
     document.getElementById('infoModal').style.display = 'flex';
+    document.getElementById('infoTabSelect').value = 'howto';
     document.getElementById('infoTabContent').innerHTML = langData[currentLang].info;
   };
   document.getElementById('closeInfo').onclick = function() {
@@ -733,10 +970,25 @@ window.addEventListener('DOMContentLoaded', function() {
   };
   document.getElementById('roleBtn').onclick = function() {
     document.getElementById('roleModal').style.display = 'flex';
-    document.getElementById('roleTabContent').innerHTML = langData[currentLang].world;
+    // 動態插入目前化合物名稱
+    const compoundName = compounds[currentCompound][currentLang];
+    document.getElementById('roleTabContent').innerHTML =
+      `<b>${compoundName}</b><br><br>` + langData[currentLang].world;
   };
   document.getElementById('closeRole').onclick = function() {
     document.getElementById('roleModal').style.display = 'none';
+  };
+
+  // 新增分頁切換事件
+  document.getElementById('infoTabSelect').onchange = function() {
+    const val = this.value;
+    let html = '';
+    if (val === 'howto') html = langData[currentLang].info;
+    else if (val === 'salt') html = "<b>鹽分系統說明</b><br>（請自行補充內容）";
+    else if (val === 'upgrade') html = "<b>升級說明</b><br>（請自行補充內容）";
+    else if (val === 'acid') html = "<b>酸性怪物說明</b><br>（請自行補充內容）";
+    else if (val === 'special') html = "<b>特殊功能說明</b><br>（請自行補充內容）";
+    document.getElementById('infoTabContent').innerHTML = html;
   };
 
   // 多語言切換
@@ -783,6 +1035,111 @@ window.addEventListener('DOMContentLoaded', function() {
       }, 900);
     }
   });
+
+  // 公式說明內容
+const formulaText = `
+<b>遊戲主要公式說明：</b><br><br>
+<b>1. 添加鹽分量：</b><br>
+每次點擊添加鹽分 = <code>0.001 × (50 + 自然侵蝕等級 × 100) × max(75, 剩餘水量)</code><br>
+說明：自然侵蝕等級越高，每次點擊添加的鹽分越多，水量越多時添加量也越多（最低以75L計）。<br><br>
+<b>2. 蒸發（每次點擊扣水）：</b><br>
+每次點擊減少水量 = <code>1 + 蒸發等級 × 2.5</code><br>
+說明：等級越高，每次點擊扣的水越多。<br><br>
+<b>3. 添加鹽分冷卻：</b><br>
+冷卻時間(ms) = <code>max(50, 1000 - 加速勞動等級 × 180)</code><br>
+說明：等級越高，冷卻越短，最短50ms。<br><br>
+<b>4. 自動溶解：</b><br>
+每秒自動添加鹽分 = <code>鹽分添加量 × (1000/點擊冷卻ms) × (1000/剩餘水量) × (0.3*自動溶解等級)</code><br>
+說明：等級越高自動添加越多，水量越少自動添加越快。<br><br>
+<b>5. 研究進度百分比：</b><br>
+<code>min(100, (鹽分濃度 / 當前門檻) × 100)</code><br>
+說明：達到門檻即可進行研究重置。<br><br>
+<b>6. 升級花費：</b><br>
+<code>0.001 × 倍率^等級</code>，倍率依升級類型不同（自然侵蝕/蒸發2倍，自動溶解10倍，加速勞動15倍）<br>
+`;
+
+document.getElementById('showFormulaBtn').onclick = function() {
+  document.getElementById('formulaContent').innerHTML = formulaText;
+  document.getElementById('formulaModal').style.display = 'flex';
+};
+document.getElementById('closeFormula').onclick = function() {
+  document.getElementById('formulaModal').style.display = 'none';
+};
+
+// --- 冷卻圈動畫 ---
+let cooldownTimer = null;
+function updateCooldownRing() {
+  const cooldown = getFasterLaborCooldown();
+  const now = Date.now();
+  const elapsed = now - lastClickTime;
+  const percent = Math.max(0, Math.min(1, elapsed / cooldown));
+  const offset = 169.6 * (1 - percent);
+  document.querySelector('.cooldown-ring .progress').setAttribute('stroke-dashoffset', offset);
+  document.getElementById('cooldownText').textContent = `${Math.max(0, Math.ceil(cooldown - elapsed))}ms`;
+  if (percent >= 1) {
+    document.querySelector('.cooldown-ring .progress').style.stroke = "#7fd7d7";
+  } else {
+    document.querySelector('.cooldown-ring .progress').style.stroke = "#f7c873";
+  }
+}
+function startCooldownLoop() {
+  if (cooldownTimer) clearInterval(cooldownTimer);
+  cooldownTimer = setInterval(updateCooldownRing, 30);
+}
+startCooldownLoop();
+
+// 自動溶解效果
+setInterval(function() {
+  if (autoDissolveLv > 0) {
+    // 只更新數值，不觸發動畫
+    let saltAdd = getAutoDissolvePerSec() * resetMultiplier / 10; // 每100ms加1/10
+    saltMg += saltAdd;
+    // 只更新內容，不呼叫 animateValue
+    document.getElementById('saltPpm').textContent = (saltMg / waterVolume).toFixed(3);
+    document.getElementById('saltTotal').textContent = saltMg.toFixed(2);
+    // 最高鹽分濃度紀錄
+    let ppm = saltMg / waterVolume;
+    if (ppm > maxSaltPpm) maxSaltPpm = ppm;
+    document.getElementById('maxSaltPpm').textContent = maxSaltPpm.toFixed(3);
+    // 研究進度
+    document.getElementById('research').textContent = research;
+    // 其餘顯示
+    updateUpgradeButtons();
+    updateResearchUI();
+  }
+}, 100);
+
+// --- 20 條隨機輪播金句 ---
+const peacefulQuotes = [
+  "慢慢來，享受每一滴水的變化。",
+  "科學需要耐心，鹽分也一樣。",
+  "每一次點擊，都是進步。",
+  "觀察細節，發現奇蹟。",
+  "鹽與水的故事，無窮無盡。",
+  "靜心等待，實驗會給你答案。",
+  "每一滴水都值得珍惜。",
+  "研究的路上，別忘了休息。",
+  "數據會說話，耐心會收穫。",
+  "讓鹽分帶你探索未知。",
+  "一點一滴，都是積累。",
+  "科學的美，在於發現。",
+  "別急，慢慢來才有趣。",
+  "每個實驗都是新的開始。",
+  "享受過程，結果自然會來。",
+  "鹽分的世界，值得細細品味。",
+  "放慢腳步，觀察變化。",
+  "每次嘗試都很重要。",
+  "相信自己，也相信數據。",
+  "水與鹽，都是生活的藝術。"
+];
+let quoteIdx = 0;
+const tipEl = document.querySelector('.peaceful-tip');
+function rotateQuote() {
+  tipEl.textContent = peacefulQuotes[quoteIdx];
+  quoteIdx = (quoteIdx + 1) % peacefulQuotes.length;
+}
+rotateQuote();
+setInterval(rotateQuote, 10000);
 });
 </script>
 </body>
