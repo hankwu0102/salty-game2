@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="zh-Hant">
 <head>
@@ -491,3 +492,824 @@ body {
     <div>
       <span data-zh="需要所有研究達到最大並重置：" data-en="Requires all research maxed and reset: ">需要所有研究達到最大並重置：</span>
       <span id="superResetReq" style="color:#b3f0f0">0/5</span>
+    </div>
+    <button class="reset-btn" id="superResetBtn" data-zh="突破" data-en="Transcend Now" disabled>突破</button>
+    <div style="margin-top:10px;font-size:0.95em;color:#b5cfcf;" data-zh="超越後將獲得永久加成，並重置所有進度。" data-en="Transcend for permanent bonus, resets all progress.">超越後將獲得永久加成，並重置所有進度。</div>
+    <div style="margin-top:14px;color:#ff4444;font-weight:bold;font-size:1em;">
+      ⚠️ 超越會重置所有進度，請謹慎操作！
+    </div>
+  </div>
+  <div class="credits"
+  data-zh="升級名稱由 you_3009 提供"
+  data-en="Upgrade names by you_3009">
+  升級名稱由 you_3009 提供
+</div>
+<div class="footer"
+  data-zh="© 2025 鹽分實驗室 | 科學放置遊戲"
+  data-en="© 2025 Salt Laboratory | Science Idle Game">
+  © 2025 鹽分實驗室 | 科學放置遊戲
+</div>
+<div class="version">v1.11K.5-09p~1!!E</div>
+<!-- 增加一個不可見的 div 讓頁面可以滾動超過底部 -->
+<div style="height: 120px; pointer-events: none; opacity: 0;"></div>
+<script>
+// filepath: /workspaces/salty-game2/index.html
+window.addEventListener('DOMContentLoaded', function() {
+  // 多語言資料
+  const langData = {
+    zh: {
+      title: "鹽類實驗室",
+      desc: "你是一位鹽分研究員，正在研究不同鹽類在水中的溶解度...",
+      tip: "慢慢來，享受每一滴水的變化。",
+      info: `
+        <b>鹽分實驗室玩法說明</b><br><br>
+        點擊「添加鹽分」增加鹽分濃度 (mg/L)。<br>
+        升級可提升各種能力。<br>
+        研究進階可重置並獲得倍率。<br>
+        <br>
+        <b>升級說明：</b><br>
+        <b>自然侵蝕：</b> 提升每次點擊添加的鹽分量。<br>
+        <b>蒸發：</b> 每次點擊減少水量，讓鹽分濃度更快上升。<br>
+        <b>加速勞動：</b> 降低「添加鹽分」冷卻時間。<br>
+        <b>自動溶解：</b> 每秒自動增加鹽分。<br>
+      `,
+      world: `
+        <b>世界觀</b><br>
+        你是一位鹽分研究員，探索水與鹽的奧秘。<br>
+        你的目標是研究不同鹽類在水中的溶解度，並突破極限。<br>
+        <br>
+        <b>章節</b><br>
+        1. 鹽的起點<br>
+        2. 糖的挑戰<br>
+        3. 鉀的突破<br>
+        4. 鈣的深淵<br>
+        5. 鎂的終章<br>
+      `,
+      addSalt: "添加鹽分",
+      naturalErosion: "自然侵蝕",
+      evaporation: "蒸發",
+      fasterLabor: "加速勞動",
+      autoDissolve: "自動溶解",
+      cost: "花費：",
+      effect: "效果：",
+      addExtra: "每次點擊額外增加",
+      reduce: "每次點擊減少",
+      reduceCooldown: "減少",
+      autoAdd: "每秒自動添加",
+      salt: "鹽分",
+      water: "水量",
+      cooldown: "冷卻時間",
+      currentLevel: "當前等級：",
+      experimentData: "實驗數據",
+      saltConcentration: "鹽分濃度：",
+      waterVolume: "剩餘水量：",
+      expPoints: "實驗點數：",
+      researchProgress: "研究進度：",
+      nextResearchReq: "下次研究需要：",
+      current: "（目前：",
+      mgL: "mg/L",
+      L: "L",
+      s: "/s",
+      ms: "ms",
+      multiplier: "倍率",
+      currentResearch: "當前研究：",
+      currentMultiplier: "當前倍率：",
+      nextResearch: "下次研究：",
+      afterReset: "重置後獲得：",
+      nextResearchPpm: "下次研究所需濃度：",
+      resetResearch: "重置研究",
+      transcendReset: "研究突破",
+      transcendPoints: "當前超越點數：",
+      transcendReq: "需要所有研究達到最大並重置：",
+      transcendNow: "突破",
+      transcendTip: "超越後將獲得永久加成，並重置所有進度。",
+      transcendWarn: "⚠️ 超越會重置所有進度，請謹慎操作！",
+      upgradeBy: "升級名稱由 you_3009 提供",
+      copyright: "© 2025 鹽分實驗室 | 科學放置遊戲"
+    },
+    en: {
+      title: "Salt Laboratory",
+      desc: "You are a salt researcher studying the solubility of different salts in water...",
+      tip: "Take it slow and enjoy every drop.",
+      info: `
+        <b>How to Play Salt Laboratory</b><br><br>
+        Click "Add Salt" to increase salt concentration (mg/L).<br>
+        Upgrades improve various abilities.<br>
+        Research progress allows reset for multipliers.<br>
+        <br>
+        <b>Upgrade Description:</b><br>
+        <b>Natural Erosion:</b> Increases salt per click.<br>
+        <b>Evaporation:</b> Reduces water per click, raising salt concentration faster.<br>
+        <b>Faster Labor:</b> Reduces "Add Salt" cooldown.<br>
+        <b>Auto Dissolve:</b> Adds salt automatically every second.<br>
+      `,
+      world: `
+        <b>Worldview</b><br>
+        You are a salt researcher exploring the mysteries of water and salt.<br>
+        Your goal is to study the solubility of different salts in water and break through the limits.<br>
+        <br>
+        <b>Chapters</b><br>
+        1. The Beginning of Salt<br>
+        2. The Challenge of Sugar<br>
+        3. The Breakthrough of Potassium<br>
+        4. The Abyss of Calcium<br>
+        5. The Finale of Magnesium<br>
+      `,
+      addSalt: "Add Salt",
+      naturalErosion: "Natural Erosion",
+      evaporation: "Evaporation",
+      fasterLabor: "Faster Labor",
+      autoDissolve: "Auto Dissolve",
+      cost: "Cost: ",
+      effect: "Effect: ",
+      addExtra: "Add extra",
+      reduce: "Reduce",
+      reduceCooldown: "Reduce",
+      autoAdd: "Auto add",
+      salt: "salt",
+      water: "water",
+      cooldown: "cooldown",
+      currentLevel: "Current Level: ",
+      experimentData: "Experiment Data",
+      saltConcentration: "Salt Concentration: ",
+      waterVolume: "Water Volume: ",
+      expPoints: "Experiment Points: ",
+      researchProgress: "Research Progress: ",
+      nextResearchReq: "Next research requires: ",
+      current: "(Current: ",
+      mgL: "mg/L",
+      L: "L",
+      s: "/s",
+      ms: "ms",
+      multiplier: "multiplier",
+      currentResearch: "Current Research: ",
+      currentMultiplier: "Current Multiplier: ",
+      nextResearch: "Next Research: ",
+      afterReset: "After reset: ",
+      nextResearchPpm: "PPM needed for next research: ",
+      resetResearch: "Reset Research",
+      transcendReset: "Transcend Reset",
+      transcendPoints: "Transcend Points: ",
+      transcendReq: "Requires all research maxed and reset: ",
+      transcendNow: "Transcend Now",
+      transcendTip: "Transcend for permanent bonus, resets all progress.",
+      transcendWarn: "⚠️ Transcend will reset all progress. Be careful!",
+      upgradeBy: "Upgrade names by you_3009",
+      copyright: "© 2025 Salt Laboratory | Science Idle Game"
+    }
+  };
+
+  // 當前語言
+  let currentLang = "zh";
+
+  // 升級等級
+  let naturalErosionLv = 0;
+  let evaporationLv = 0;
+  let fasterLaborLv = 0;
+  let autoDissolveLv = 0;
+
+  // 主要數值
+  let saltMg = 0; // 鹽分總量 (mg)
+  let waterVolume = 1000; // 水量 (L)
+  let expPoints = 0;
+  let research = 0;
+  let clickCooldown = 1000;
+  let lastClickTime = 0;
+
+  // 研究物質名稱
+  const compounds = [
+    { zh: "氯化鈉 (NaCl)", en: "Sodium Chloride (NaCl)" },
+    { zh: "硝酸鉀 (KNO₃)", en: "Potassium Nitrate (KNO₃)" },
+    { zh: "硫酸鎂 (MgSO₄)", en: "Magnesium Sulfate (MgSO₄)" },
+    { zh: "醋酸鈉 (CH₃COONa)", en: "Sodium Acetate (CH₃COONa)" },
+    { zh: "碳酸鈉 (Na₂CO₃)", en: "Sodium Carbonate (Na₂CO₃)" },
+    { zh: "氯化鉀 (KCl)", en: "Potassium Chloride (KCl)" },
+    { zh: "硫酸銨 ((NH₄)₂SO₄)", en: "Ammonium Sulfate ((NH₄)₂SO₄)" },
+    { zh: "硝酸鈉 (NaNO₃)", en: "Sodium Nitrate (NaNO₃)" },
+    { zh: "氯化鈣 (CaCl₂)", en: "Calcium Chloride (CaCl₂)" },
+    { zh: "硫酸鈉 (Na₂SO₄)", en: "Sodium Sulfate (Na₂SO₄)" }
+  ];
+  let currentCompound = 0;
+
+  // 新增：最高鹽分濃度紀錄
+  let maxSaltPpm = 0;
+
+  // 數值動畫效果
+  function animateValue(id, newValue) {
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.classList.remove('animated');
+    void el.offsetWidth; // 觸發重繪
+    el.classList.add('animated');
+    el.textContent = newValue;
+  }
+
+  // 升級動畫效果
+  function animateUpgradeBtn(id) {
+    const btn = document.getElementById(id);
+    if (!btn) return;
+    btn.classList.remove('upgraded');
+    void btn.offsetWidth;
+    btn.classList.add('upgraded');
+    setTimeout(() => btn.classList.remove('upgraded'), 500);
+  }
+
+  function updateDisplay() {
+    // 直接用 saltMg / waterVolume 計算鹽分濃度
+    // 原本：if (waterVolume < 1) waterVolume = 1;
+    if (waterVolume < 50) waterVolume = 50;
+    let ppm = saltMg / waterVolume;
+    animateValue('saltPpm', ppm.toFixed(3));
+    animateValue('waterVolume', waterVolume.toFixed(1));
+    animateValue('expPoints', expPoints);
+    animateValue('saltTotal', saltMg.toFixed(2));
+    // 新增：最高鹽分濃度紀錄
+    if (ppm > maxSaltPpm) maxSaltPpm = ppm;
+    animateValue('maxSaltPpm', maxSaltPpm.toFixed(3));
+    // 研究進度
+    animateValue('research', research);
+    // 顯示化合物名稱
+    if (document.getElementById('currentResearch'))
+      document.getElementById('currentResearch').textContent = compounds[currentCompound][currentLang];
+    if (document.getElementById('nextResearch') && compounds[currentCompound + 1])
+      document.getElementById('nextResearch').textContent = compounds[currentCompound + 1][currentLang];
+    updateUpgradeButtons();
+    updateResearchUI();
+  }
+
+  function updateUpgradeButtons() {
+    let ppm = waterVolume > 0 ? saltMg / waterVolume : 0;
+    document.getElementById('naturalErosionEffect').textContent = getNaturalErosionMult().toFixed(1);
+    document.getElementById('naturalErosionLv').textContent = naturalErosionLv;
+    document.getElementById('evaporationEffect').textContent = getEvaporationAmount().toFixed(1);
+    document.getElementById('evaporationLv').textContent = evaporationLv;
+    document.getElementById('fasterLaborEffect').textContent = getFasterLaborCooldown().toFixed(0);
+    document.getElementById('fasterLaborLv').textContent = fasterLaborLv;
+    // 顯示每秒自動添加的 mg
+    document.getElementById('autoDissolveEffect').textContent = getAutoDissolvePerSec().toFixed(1);
+    document.getElementById('autoDissolveLv').textContent = autoDissolveLv;
+    document.getElementById('naturalErosionCost').textContent = getUpgradeCost(naturalErosionLv, 'normal').toFixed(3) + " mg/L";
+    document.getElementById('evaporationCost').textContent = getUpgradeCost(evaporationLv, 'normal').toFixed(3) + " mg/L";
+    let fasterLaborCost = getUpgradeCost(fasterLaborLv, 'faster');
+    document.getElementById('fasterLaborCost').textContent =
+      (fasterLaborCost >= 100000 ? fasterLaborCost.toExponential(3) : fasterLaborCost.toFixed(3)) + " mg/L";
+    document.getElementById('autoDissolveCost').textContent = getUpgradeCost(autoDissolveLv, 'auto').toFixed(3) + " mg/L";
+    document.getElementById('naturalErosionBtn').disabled = ppm < getUpgradeCost(naturalErosionLv, 'normal');
+    document.getElementById('evaporationBtn').disabled = ppm < getUpgradeCost(evaporationLv, 'normal');
+    document.getElementById('fasterLaborBtn').disabled = ppm < fasterLaborCost;
+    document.getElementById('autoDissolveBtn').disabled = ppm < getUpgradeCost(autoDissolveLv, 'auto');
+  }
+
+  function getUpgradeCost(lv, type) { 
+    let base = 0.001;
+    let multi = 2;
+    if (type === 'auto') multi = 10;
+    // fasterLabor 使用 15 倍
+    if (type === 'faster') multi = 15;
+    return base * Math.pow(multi, lv);
+  }
+  function getNaturalErosionMult() { 
+    // 點擊基礎倍率提高
+    return 50 + naturalErosionLv * 100; 
+  }
+  function getEvaporationAmount() { return 1 + evaporationLv * 2.5; }
+  function getFasterLaborCooldown() { return Math.max(50, 1000 - fasterLaborLv * 180); }
+  function getEffectiveWaterVolume() {
+    // 若水量低於 50L，進行 softcap，避免鹽分產量爆炸
+    if (waterVolume < 50) {
+      // 讓有效水量 = 50 * (waterVolume / 50)^0.5，越低越難降
+      return Math.max(1, 50 * Math.pow(waterVolume / 50, 0.5));
+    }
+    return waterVolume;
+  }
+  function getSaltAddAmount() {
+    // 每次點擊實際添加的鹽分量（mg）
+    let addPpm = 0.001 * getNaturalErosionMult();
+    let addAmount = addPpm * getEffectiveWaterVolume();
+    return addAmount;
+  }
+
+  function getAutoDissolvePerSec() {
+    // 公式：鹽分添加量 * (1000/點擊冷卻ms) * (1000/剩餘水量) * (0.3*自動溶解等級)
+    if (autoDissolveLv === 0) return 0;
+    let saltAddAmount = getSaltAddAmount();
+    let cooldown = getFasterLaborCooldown(); // ms
+    let L = getEffectiveWaterVolume();
+    let perLv = 0.3 * autoDissolveLv;
+    return saltAddAmount * (1000 / cooldown) * (1000 / L) * perLv;
+  }
+
+  // --- 研究進階與超越重置邏輯 ---
+
+  // 研究倍率與門檻
+  let resetMultiplier = 1.0;
+  let nextMultiplier = 1.5;
+  const researchThresholds = [1000, 2000, 4000, 8000, 16000, 32000, 64000, 128000, 256000, 512000];
+
+  // 更新研究進度顯示
+  function updateResearchUI() {
+    // 研究進度百分比
+    let ppm = waterVolume > 0 ? saltMg / waterVolume : 0;
+    let req = researchThresholds[currentCompound] || 1000;
+    let percent = Math.min(100, (ppm / req) * 100);
+    document.getElementById('research').textContent = percent.toFixed(1);
+    document.getElementById('prestigeReqPpm').textContent = req.toFixed(3);
+    document.getElementById('nextResearchPpm').textContent = req.toFixed(3);
+    document.getElementById('resetMultiplier').textContent = resetMultiplier.toFixed(1);
+    document.getElementById('nextMultiplier').textContent = nextMultiplier.toFixed(1);
+    // 超越條件顯示
+    document.getElementById('superResetReq').textContent = `${currentCompound}/${compounds.length}`;
+    // 超越按鈕啟用條件
+    document.getElementById('superResetBtn').disabled = !(currentCompound >= compounds.length - 1);
+  }
+
+  // 點擊添加鹽分時給實驗點數
+  const oldAddSalt = document.getElementById('addSaltBtn').onclick;
+  document.getElementById('addSaltBtn').onclick = function() {
+    // 冷卻判斷
+    const now = Date.now();
+    if (now - lastClickTime < getFasterLaborCooldown()) return;
+    lastClickTime = now;
+
+    // 計算添加鹽分量
+    const addAmount = getSaltAddAmount();
+    saltMg += addAmount * resetMultiplier; // 研究倍率加成
+    // 扣除水量
+    waterVolume = Math.max(0, waterVolume - getEvaporationAmount());
+    // 增加實驗點數
+    expPoints += 1;
+
+    animateUpgradeBtn('addSaltBtn');
+    updateDisplay();
+  };
+
+  // 研究重置
+  document.getElementById('resetBtn').onclick = function() {
+    let ppm = waterVolume > 0 ? saltMg / waterVolume : 0;
+    let req = researchThresholds[currentCompound] || 1000;
+    if (ppm < req) return;
+    // 進階到下一個化學物質
+    if (currentCompound < compounds.length - 1) {
+      currentCompound++;
+      saltMg = 0;
+      waterVolume = 1000;
+      naturalErosionLv = 0;
+      evaporationLv = 0;
+      fasterLaborLv = 0;
+      autoDissolveLv = 0;
+      resetMultiplier = nextMultiplier;
+      nextMultiplier = (nextMultiplier * 1.5).toFixed(2) * 1;
+      expPoints = 0;
+      updateDisplay();
+      updateResearchUI();
+    }
+  };
+
+  // 超越重置
+  document.getElementById('superResetBtn').onclick = function() {
+    // 彈窗詢問
+    const msg = currentLang === "zh"
+      ? "如果，我通電會發生什麼事？"
+      : "What will happen if I electrify it?";
+    if (!window.confirm(msg)) return;
+    if (currentCompound < compounds.length - 1) return;
+    // 重置所有進度並給超越點數
+    currentCompound = 0;
+    saltMg = 0;
+    waterVolume = 1000;
+    naturalErosionLv = 0;
+    evaporationLv = 0;
+    fasterLaborLv = 0;
+    autoDissolveLv = 0;
+    resetMultiplier = 1.0;
+    nextMultiplier = 1.5;
+    expPoints = 0;
+    let transcend = parseInt(document.getElementById('transcendPoints').textContent) || 0;
+    document.getElementById('transcendPoints').textContent = transcend + 1;
+    updateDisplay();
+    updateResearchUI();
+
+    // 新增：在螢幕最上方新增"溶解"和"析出"按鈕
+    if (!document.getElementById('dissolveSwitchBtn')) {
+      // 建立容器
+      const switchBar = document.createElement('div');
+      switchBar.id = 'switchBar';
+      switchBar.style.position = 'fixed';
+      switchBar.style.top = '0';
+      switchBar.style.left = '0';
+      switchBar.style.width = '100vw';
+      switchBar.style.background = '#1a2324';
+      switchBar.style.zIndex = '9999';
+      switchBar.style.display = 'flex';
+      switchBar.style.justifyContent = 'center';
+      switchBar.style.gap = '16px';
+      switchBar.style.padding = '10px 0 6px 0';
+      switchBar.style.boxShadow = '0 2px 12px #223b';
+
+      // 溶解按鈕
+      const dissolveBtn = document.createElement('button');
+      dissolveBtn.id = 'dissolveSwitchBtn';
+      dissolveBtn.className = 'neon-btn';
+      dissolveBtn.textContent = '溶解';
+      dissolveBtn.style.fontWeight = 'bold';
+      dissolveBtn.style.borderColor = '#f7c873';
+      dissolveBtn.style.background = '#223233';
+      dissolveBtn.onclick = function() {
+        // 切回主面板
+        document.getElementById('mainPanel').style.display = '';
+        let precipPanel = document.getElementById('precipitatePanel');
+        if (precipPanel) precipPanel.style.display = 'none';
+        dissolveBtn.style.borderColor = '#f7c873';
+        precipitateBtn.style.borderColor = '#7fd7d7';
+      };
+
+      // 析出按鈕
+      const precipitateBtn = document.createElement('button');
+      precipitateBtn.id = 'precipitateSwitchBtn';
+      precipitateBtn.className = 'neon-btn';
+      precipitateBtn.textContent = '析出';
+      precipitateBtn.style.borderColor = '#7fd7d7';
+      precipitateBtn.onclick = function() {
+        document.getElementById('mainPanel').style.display = 'none';
+        let precipPanel = document.getElementById('precipitatePanel');
+        if (!precipPanel) {
+          precipPanel = document.createElement('div');
+          precipPanel.id = 'precipitatePanel';
+          precipPanel.style.marginTop = '100px';
+          precipPanel.style.color = '#aee6e6';
+          precipPanel.style.textAlign = 'center';
+          precipPanel.innerHTML = `
+            <div style="font-size:2em;margin-bottom:18px;font-weight:bold;">金屬析出</div>
+            <div style="background:#142024b0;border:1px solid #7fd7d7;border-radius:8px;max-width:400px;margin:0 auto;padding:18px 0 18px 0;">
+              <!-- 反應物欄位 -->
+              <div style="font-size:1.1em;color:#7fd7d7;margin-bottom:8px;">反應物</div>
+              <div style="display:flex;gap:18px;align-items:center;justify-content:center;margin-bottom:12px;">
+                <div>
+                  <label for="soluteMoleInput" style="color:#f7c873;">溶質莫耳數</label>
+                  <input id="soluteMoleInput" type="number" min="0" max="100" value="1" step="0.01" style="width:60px;text-align:right;"> mol
+                </div>
+                <div>
+                  <label for="solutionVolumeInput" style="color:#f7c873;">溶液體積</label>
+                  <input id="solutionVolumeInput" type="number" min="0" max="1000" value="100" style="width:60px;text-align:right;"> mL
+                </div>
+              </div>
+              <!-- 反應條件 -->
+              <div style="font-size:1.2em;color:#f7c873;margin-bottom:8px;">反應條件</div>
+              <div style="display:flex;gap:18px;align-items:center;justify-content:center;margin-bottom:12px;">
+                <div>
+                  <label for="tempInput" style="color:#f7c873;">溫度</label>
+                  <input id="tempInput" type="number" min="0" max="200" value="25" style="width:60px;text-align:right;"> ℃
+                </div>
+                <div>
+                  <label for="pressureInput" style="color:#f7c873;">壓力</label>
+                  <input id="pressureInput" type="number" min="0" max="10" step="0.1" value="1" style="width:60px;text-align:right;"> atm
+                </div>
+                <div>
+                  <label for="voltageInput" style="color:#f7c873;">電壓</label>
+                  <input id="voltageInput" type="number" min="0" max="100" step="0.1" value="0" style="width:60px;text-align:right;"> V
+                </div>
+              </div>
+              <div id="precipitateData"></div>
+            </div>
+          `;
+          document.body.appendChild(precipPanel);
+
+          // 初始化變數與事件
+          let temperature = 25, pressure = 1, voltage = 0;
+          let soluteMole = 1, solutionVolume = 100;
+          document.getElementById('tempInput').oninput = function() {
+            temperature = parseFloat(this.value) || 0;
+          };
+          document.getElementById('pressureInput').oninput = function() {
+            pressure = parseFloat(this.value) || 0;
+          };
+          document.getElementById('voltageInput').oninput = function() {
+            voltage = parseFloat(this.value) || 0;
+          };
+          document.getElementById('soluteMoleInput').oninput = function() {
+            soluteMole = parseFloat(this.value) || 0;
+          };
+          document.getElementById('solutionVolumeInput').oninput = function() {
+            solutionVolume = parseFloat(this.value) || 0;
+          };
+        }
+        precipPanel.style.display = '';
+        dissolveBtn.style.borderColor = '#7fd7d7';
+        precipitateBtn.style.borderColor = '#f7c873';
+      };
+      switchBar.appendChild(dissolveBtn);
+      switchBar.appendChild(precipitateBtn);
+      document.body.appendChild(switchBar);
+
+      // 主面板加 id 方便切換（只加一次）
+      let mainPanel = document.getElementById('mainPanel');
+      if (!mainPanel) {
+        // 假設 .container 是主面板
+        const container = document.querySelector('.container');
+        if (container) container.id = 'mainPanel';
+      }
+    }
+  };
+  // 自然侵蝕升級
+  document.getElementById('naturalErosionBtn').onclick = function() {
+    let ppm = waterVolume > 0 ? saltMg / waterVolume : 0;
+    let cost = getUpgradeCost(naturalErosionLv, 'normal');
+    if (ppm < cost) return;
+    saltMg -= cost * waterVolume;
+    naturalErosionLv++;
+    animateUpgradeBtn('naturalErosionBtn');
+    updateDisplay();
+  };
+  // 蒸發升級
+  document.getElementById('evaporationBtn').onclick = function() {
+    let ppm = waterVolume > 0 ? saltMg / waterVolume : 0;
+    let cost = getUpgradeCost(evaporationLv, 'normal');
+    if (ppm < cost) return;
+    saltMg -= cost * waterVolume;
+    evaporationLv++;
+    animateUpgradeBtn('evaporationBtn');
+    updateDisplay();
+  };
+  // 加速勞動升級
+  document.getElementById('fasterLaborBtn').onclick = function() {
+    let ppm = waterVolume > 0 ? saltMg / waterVolume : 0;
+    let cost = getUpgradeCost(fasterLaborLv, 'faster');
+    if (ppm < cost) return;
+    saltMg -= cost * waterVolume;
+    fasterLaborLv++;
+    animateUpgradeBtn('fasterLaborBtn');
+    updateDisplay();
+    startCooldownLoop(); // 冷卻變更時重啟冷卻動畫
+  };
+  // 自動溶解升級
+  document.getElementById('autoDissolveBtn').onclick = function() {
+    let ppm = waterVolume > 0 ? saltMg / waterVolume : 0;
+    let cost = getUpgradeCost(autoDissolveLv, 'auto');
+    if (ppm < cost) return;
+    saltMg -= cost * waterVolume;
+    autoDissolveLv++;
+    animateUpgradeBtn('autoDissolveBtn');
+    updateDisplay();
+  };
+
+  // 頁面載入時初始化
+  updateResearchUI();
+  // translateAll 只更新文字，不要用 innerHTML 直接覆蓋按鈕
+  function translateAll() {
+    const lang = langData[currentLang];
+    // 1. 直接覆蓋所有有 data-zh/data-en 的元素
+    document.querySelectorAll('[data-zh][data-en]').forEach(el => {
+      el.textContent = el.getAttribute(currentLang === 'zh' ? 'data-zh' : 'data-en');
+    });
+    // 2. 針對特殊區塊（如 footer、credits、version）直接覆蓋
+    const credits = document.querySelector('.credits');
+    if (credits) credits.textContent = lang.upgradeBy;
+    const footer = document.querySelector('.footer');
+    if (footer) footer.textContent = lang.copyright;
+    // 3. 其他動態內容（如彈窗）也直接覆蓋
+    document.getElementById('langSwitch').textContent = currentLang === "zh" ? "English" : "中文";
+    document.title = lang.title;
+  }
+
+  // 彈窗開關
+  document.getElementById('infoBtn').onclick = function() {
+    document.getElementById('infoModal').style.display = 'flex';
+    document.getElementById('infoTabSelect').value = 'howto';
+    document.getElementById('infoTabContent').innerHTML = langData[currentLang].info;
+  };
+  document.getElementById('closeInfo').onclick = function() {
+    document.getElementById('infoModal').style.display = 'none';
+  };
+  document.getElementById('roleBtn').onclick = function() {
+    document.getElementById('roleModal').style.display = 'flex';
+    // 動態插入目前化合物名稱
+    const compoundName = compounds[currentCompound][currentLang];
+    document.getElementById('roleTabContent').innerHTML =
+      `<b>${compoundName}</b><br><br>` + langData[currentLang].world;
+  };
+  document.getElementById('closeRole').onclick = function() {
+    document.getElementById('roleModal').style.display = 'none';
+  };
+
+  // 新增分頁切換事件
+  document.getElementById('infoTabSelect').onchange = function() {
+    const val = this.value;
+    let html = '';
+    if (val === 'howto') html = langData[currentLang].info;
+    else if (val === 'salt') html = "<b>鹽分系統說明</b><br>（請自行補充內容）";
+    else if (val === 'upgrade') html = "<b>升級說明</b><br>（請自行補充內容）";
+    else if (val === 'acid') html = "<b>酸性怪物說明</b><br>（請自行補充內容）";
+    else if (val === 'special') html = "<b>特殊功能說明</b><br>（請自行補充內容）";
+    document.getElementById('infoTabContent').innerHTML = html;
+  };
+
+  // 多語言切換
+  document.getElementById('langSwitch').onclick = function() {
+    currentLang = (currentLang === "zh") ? "en" : "zh";
+    document.getElementById('langSwitch').textContent = currentLang === "zh" ? "English" : "中文";
+    translateAll();
+  };
+
+  // 頁面載入時初始化語言
+  translateAll();
+  updateDisplay();
+
+  // --- 彩蛋：滑過底部顯示 :) 並自動滾回頂部 ---
+  let easterEggShown = false;
+  window.addEventListener('scroll', function() {
+    if (easterEggShown) return;
+    // 允許用戶「滑過」底部一點才觸發
+    if ((window.innerHeight + window.scrollY) > document.body.offsetHeight + 30) {
+      easterEggShown = true;
+      // 建立提示元素
+      const egg = document.createElement('div');
+      egg.textContent = '( ͡° ͜ʖ ͡°)';
+      egg.style.position = 'fixed';
+      egg.style.bottom = '40px';
+      egg.style.left = '50%';
+      egg.style.transform = 'translateX(-50%)';
+      egg.style.background = '#223233';
+      egg.style.color = '#f7c873';
+      egg.style.fontSize = '2.5em';
+      egg.style.padding = '16px 32px';
+      egg.style.borderRadius = '16px';
+      egg.style.boxShadow = '0 4px 24px #223b';
+      egg.style.zIndex = '9999';
+      egg.style.opacity = '0.95';
+      document.body.appendChild(egg);
+
+      setTimeout(() => {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+        setTimeout(() => {
+          egg.remove();
+          easterEggShown = false;
+        }, 1200);
+      }, 900);
+    }
+  });
+
+  // 公式說明內容
+const formulaText = `
+<b>遊戲主要公式說明：</b><br><br>
+<b>1. 添加鹽分量：</b><br>
+每次點擊添加鹽分 = <code>0.001 × (50 + 自然侵蝕等級 × 100) × max(75, 剩餘水量)</code><br>
+說明：自然侵蝕等級越高，每次點擊添加的鹽分越多，水量越多時添加量也越多（最低以75L計）。<br><br>
+<b>2. 蒸發（每次點擊扣水）：</b><br>
+每次點擊減少水量 = <code>1 + 蒸發等級 × 2.5</code><br>
+說明：等級越高，每次點擊扣的水越多。<br><br>
+<b>3. 添加鹽分冷卻：</b><br>
+冷卻時間(ms) = <code>max(50, 1000 - 加速勞動等級 × 180)</code><br>
+說明：等級越高，冷卻越短，最短50ms。<br><br>
+<b>4. 自動溶解：</b><br>
+每秒自動添加鹽分 = <code>鹽分添加量 × (1000/點擊冷卬ms) × (1000/剩餘水量) × (0.3*自動溶解等級)</code><br>
+說明：等級越高自動添加越多，水量越少自動添加越快。<br><br>
+<b>5. 研究進度百分比：</b><br>
+<code>min(100, (鹽分濃度 / 當前門檻) × 100)</code><br>
+說明：達到門檻即可進行研究重置。<br><br>
+<b>6. 升級花費：</b><br>
+<code>0.001 × 倍率^等級</code>，倍率依升級類型不同（自然侵蝕/蒸發2倍，自動溶解10倍，加速勞動15倍）<br>
+`;
+
+// 現實中的公式內容（先留白）
+const realFormulaText = `
+<b>現實中的公式：</b><br><br>
+<b>1. 莫耳濃度 (Molarity, M)</b><br>
+公式：<code>M = n / V</code><br>
+M：莫耳濃度 (mol/L)<br>
+n：溶質的莫耳數 (mol)<br>
+V：溶液體積 (L)<br><br>
+<b>2. 質量百分濃度 (Weight %, w/w%)</b><br>
+公式：<code>質量% = 溶質質量 / 溶液總質量 × 100%</code><br>
+質量%：質量百分濃度<br>
+溶質質量：溶質的質量 (g)<br>
+溶液總質量：溶質 + 溶劑的總質量 (g)<br><br>
+<b>3. 體積百分濃度 (Volume %, v/v%)</b><br>
+公式：<code>體積% = 溶質體積 / 溶液體積 × 100%</code><br>
+體積%：體積百分濃度<br>
+溶質體積：溶質的體積 (mL 或 L)<br>
+溶液體積：溶質 + 溶劑的總體積 (mL 或 L)<br>
+`;
+
+// 公式彈窗分頁切換
+function setFormulaTab(tab) {
+  const gameBtn = document.getElementById('gameFormulaTab');
+  const realBtn = document.getElementById('realFormulaTab');
+  if (tab === 'game') {
+    document.getElementById('formulaContent').innerHTML = formulaText;
+    gameBtn.style.borderColor = '#f7c873';
+    gameBtn.style.color = '#f7c873';
+    gameBtn.style.fontWeight = 'bold';
+    realBtn.style.borderColor = '#7fd7d7';
+    realBtn.style.color = '#7fd7d7';
+    realBtn.style.fontWeight = 'normal';
+  } else {
+    document.getElementById('formulaContent').innerHTML = realFormulaText;
+    gameBtn.style.borderColor = '#7fd7d7';
+    gameBtn.style.color = '#7fd7d7';
+    gameBtn.style.fontWeight = 'normal';
+    realBtn.style.borderColor = '#f7c873';
+    realBtn.style.color = '#f7c873';
+    realBtn.style.fontWeight = 'bold';
+  }
+}
+
+document.getElementById('showFormulaBtn').onclick = function() {
+  setFormulaTab('game');
+   document.getElementById('formulaModal').style.display = 'flex';
+};
+document.getElementById('closeFormula').onclick = function() {
+  document.getElementById('formulaModal').style.display = 'none';
+};
+document.getElementById('gameFormulaTab').onclick = function() {
+  setFormulaTab('game');
+};
+document.getElementById('realFormulaTab').onclick = function() {
+  setFormulaTab('real');
+};
+
+// --- 冷卻圈動畫 ---
+let cooldownTimer = null;
+function updateCooldownRing() {
+  const cooldown = getFasterLaborCooldown();
+  const now = Date.now();
+  const elapsed = now - lastClickTime;
+  const percent = Math.max(0, Math.min(1, elapsed / cooldown));
+  // 169.6 是圓周長
+  const offset = 169.6 * (1 - percent);
+  document.querySelector('.cooldown-ring .progress').setAttribute('stroke-dashoffset', offset);
+  document.getElementById('cooldownText').textContent = `${Math.max(0, Math.ceil(cooldown - elapsed))}ms`;
+  // 動畫結束時自動回復顏色
+  if (percent >= 1) {
+    document.querySelector('.cooldown-ring .progress').style.stroke = "#7fd7d7";
+  } else {
+    document.querySelector('.cooldown-ring .progress').style.stroke = "#f7c873";
+  }
+}
+function startCooldownLoop() {
+  if (cooldownTimer) clearInterval(cooldownTimer);
+  cooldownTimer = setInterval(updateCooldownRing, 30);
+}
+startCooldownLoop();
+
+// 自動溶解效果
+setInterval(function() {
+  if (autoDissolveLv > 0) {
+    // 只更新數值，不觸發動畫
+    let saltAdd = getAutoDissolvePerSec() * resetMultiplier / 10; // 每100ms加1/10
+    saltMg += saltAdd;
+    // 只更新內容，不呼叫 animateValue
+    document.getElementById('saltPpm').textContent = (saltMg / waterVolume).toFixed(3);
+    document.getElementById('saltTotal').textContent = saltMg.toFixed(2);
+    // 最高鹽分濃度紀錄
+    let ppm = saltMg / waterVolume;
+    if (ppm > maxSaltPpm) maxSaltPpm = ppm;
+    document.getElementById('maxSaltPpm').textContent = maxSaltPpm.toFixed(3);
+    // 研究進度
+    document.getElementById('research').textContent = research;
+    // 其餘顯示
+    updateUpgradeButtons();
+    updateResearchUI();
+  }
+}, 100);
+
+// --- 20 條隨機輪播金句 ---
+const peacefulQuotes = [
+  "慢慢來，享受每一滴水的變化。",
+  "科學需要耐心，鹽分也一樣。",
+  "每一次點擊，都是進步。",
+  "觀察細節，發現奇蹟。",
+  "鹽與水的故事，無窮無盡。",
+  "靜心等待，實驗會給你答案。",
+  "每一滴水都值得珍惜。",
+  "研究的路上，別忘了休息。",
+  "數據會說話，耐心會收穫。",
+  "讓鹽分帶你探索未知。",
+  "一點一滴，都是積累。",
+  "科學的美，在於發現。",
+  "別急，慢慢來才有趣。",
+  "每個實驗都是新的開始。",
+  "享受過程，結果自然會來。",
+  "鹽分的世界，值得細細品味。",
+  "放慢腳步，觀察變化。",
+  "每次嘗試都很重要。",
+  "相信自己，也相信數據。",
+  "水與鹽，都是生活的藝術。"
+];
+let quoteIdx = 0;
+const tipEl = document.querySelector('.peaceful-tip');
+function rotateQuote() {
+  tipEl.textContent = peacefulQuotes[quoteIdx];
+  quoteIdx = (quoteIdx + 1) % peacefulQuotes.length;
+}
+rotateQuote();
+setInterval(rotateQuote, 10000);
+
+  // 新增作弊按鈕功能
+  document.getElementById('cheatSaltBtn').onclick = function() {
+    saltMg = 100000000000;
+    updateDisplay();
+  };
+});
+</script>
+</body>
+</html>
