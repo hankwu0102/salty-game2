@@ -259,7 +259,7 @@ body {
 <body style="padding-top: 80px;">
 <button class="neon-btn language-switch" id="langSwitch">English</button>
 <button id="playMusicBtn" style="font-size:1.1em;">🎵 播放音樂</button>
-<audio id="bgm" src="music/bgm.mp3"></audio>
+<audio id="bgm" src="music/Echoes of Tomorrow.mp3"></audio>
 
 <!-- 說明彈窗（多分頁） -->
 <div id="infoModal" style="display:none;position:fixed;top:0;left:0;width:100vw;height:100vh;background:#000a;z-index:200;align-items:center;justify-content:center;">
@@ -1480,10 +1480,28 @@ setInterval(rotateQuote, 10000);
 
   // 播放音樂按鈕功能
   document.getElementById('playMusicBtn').onclick = function() {
+  const audio = document.getElementById('bgm');
+  audio.currentTime = 0; // 從頭播放
+  audio.play();
+};
+
+  // 音樂控制按鈕
+  document.getElementById('toggleMusicBtn').onclick = function() {
     const audio = document.getElementById('bgm');
-    audio.currentTime = 0; // 從頭播放
-    audio.play();
+    if (audio.paused) {
+      audio.play();
+      this.textContent = '暫停音樂';
+    } else {
+      audio.pause();
+      this.textContent = '播放音樂';
+    }
   };
+
+  // 音樂循環播放
+  document.getElementById('bgm').addEventListener('ended', function() {
+    this.currentTime = 0; // 從頭開始
+    this.play(); // 繼續播放
+  });
 });
 </script>
 </body>
