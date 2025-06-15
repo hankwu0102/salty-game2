@@ -1,5 +1,4 @@
 
-
 <!DOCTYPE html>
 <html lang="zh-Hant">
 <head>
@@ -259,9 +258,7 @@ body {
 </style>
 </head>
 <body style="padding-top: 80px;">
-<audio id="bgm" autoplay loop>
-  <source src="E:\Echoes of Tomorrow.mp3" type="audio/mp3"><!-- ← 這裡 src 留空，方便你自行填寫音樂檔案路徑 -->
-</audio>
+<audio id="bgm" src="music/Echoes of Tomorrow.mp3" autoplay loop controls></audio>
 <button class="neon-btn language-switch" id="langSwitch">English</button>
 
 <!-- 說明彈窗（多分頁） -->
@@ -319,7 +316,7 @@ body {
     <button class="neon-btn" id="showFormulaBtn" title="公式 / Formula" style="font-size:1.2em;padding:4px 12px;border-radius:50%;width:36px;height:36px;line-height:1;background:#223233;color:#f7c873;border:2px solid #7fd7d7;cursor:pointer;">F</button>
     <button class="neon-btn" id="cheatSaltBtn" title="加鹽作弊" style="font-size:1.1em;padding:4px 12px;border-radius:8px;background:#223233;color:#f7c873;border:2px solid #f7c873;cursor:pointer;">💰鹽+</button>
   </div>
-  <div class="game-title" data-zh="🧪鹽類實驗室" data-en="🧪Salt Laboratory">鹽類實驗室</div>
+  <div class="game-title" data-zh="鹽類實驗室" data-en="Salt Laboratory">鹽類實驗室</div>
   <div class="game-desc" data-zh="你是一位鹽分研究員，正在研究不同鹽類在水中的溶解度..." data-en="You are a salt researcher studying the solubility of different salts in water...">你是一位鹽分研究員，正在研究不同鹽類在水中的溶解度...</div>
   <div class="peaceful-tip" data-zh="慢慢來，享受每一滴水的變化。" data-en="Take it slow and enjoy every drop.">慢慢來，享受每一滴水的變化。</div>
   
@@ -352,7 +349,7 @@ body {
   </div>
   <div class="display">
     <div id="energy" style="margin-bottom:0;font-size:2.2em;font-weight:bold;"
-      data-zh="📊實驗數據" data-en="📊Experiment Data">實驗數據</div>
+      data-zh="實驗數據" data-en="Experiment Data">實驗數據</div>
     <div id="currency-row" style="margin-bottom:20px;">
       <span data-zh="鹽分濃度：" data-en="Salt Concentration: ">鹽分濃度：</span>
       <span id="saltPpm">0</span> mg/L |
@@ -394,7 +391,7 @@ body {
   </div>
   <div class="upgrade">
     <button class="neon-btn" id="naturalErosionBtn">
-      <span data-zh="🌊自然侵蝕" data-en="🌊Natural Erosion">🌊自然侵蝕</span>
+      <span data-zh="自然侵蝕" data-en="Natural Erosion">自然侵蝕</span>
       <br>
       <span data-zh="花費：" data-en="Cost: ">花費：</span><span class="upgrade-cost" id="naturalErosionCost">0.001</span> mg/L<br>
       <span data-zh="效果：" data-en="Effect: ">效果：</span>
@@ -409,7 +406,7 @@ body {
   </div>
   <div class="upgrade">
     <button class="neon-btn" id="evaporationBtn">
-      <span data-zh="☀️蒸發" data-en="☀️Evaporation">蒸發</span>
+      <span data-zh="蒸發" data-en="Evaporation">蒸發</span>
       <br>
       <span data-zh="花費：" data-en="Cost: ">花費：</span><span class="upgrade-cost" id="evaporationCost">0.001</span> mg/L<br>
       <span data-zh="效果：" data-en="Effect: ">效果：</span>
@@ -424,7 +421,7 @@ body {
   </div>
   <div class="upgrade">
     <button class="neon-btn" id="fasterLaborBtn">
-      <span data-zh="💪加速勞動" data-en="💪Faster Labor">加速勞動</span>
+      <span data-zh="加速勞動" data-en="Faster Labor">加速勞動</span>
       <br>
       <span data-zh="花費：" data-en="Cost: ">花費：</span><span class="upgrade-cost" id="fasterLaborCost">0.001</span> mg/L<br>
       <span data-zh="效果：" data-en="Effect: ">效果：</span>
@@ -439,7 +436,7 @@ body {
   </div>
   <div class="upgrade">
     <button class="neon-btn" id="autoDissolveBtn">
-      <span data-zh="🤖自動溶解" data-en="Auto Dissolve">🤖自動溶解</span>
+      <span data-zh="自動溶解" data-en="Auto Dissolve">自動溶解</span>
       <br>
       <span data-zh="花費：" data-en="Cost: ">花費：</span><span class="upgrade-cost" id="autoDissolveCost">0.001</span> mg/L<br>
       <span data-zh="效果：" data-en="Effect: ">效果：</span>
@@ -452,7 +449,18 @@ body {
       <span id="autoDissolveLv">0</span>
     </div>
   </div>
-  
+  <button id="naturalErosionBtn" class="neon-btn" style="font-size:1.1em;">
+  🌊 自然侵蝕
+</button>
+<button id="evaporationBtn" class="neon-btn" style="font-size:1.1em;">
+  ☀️ 蒸發
+</button>
+<button id="fasterLaborBtn" class="neon-btn" style="font-size:1.1em;">
+  💪 加速勞動
+</button>
+<button id="autoDissolveBtn" class="neon-btn" style="font-size:1.1em;">
+  🤖 自動溶解
+</button>
   <div class="upgrade">
     <h2 style="margin-top:32px;" data-zh="研究進階" data-en="Research Progress">研究進階</h2>
     <div class="prestige-info">
@@ -1471,5 +1479,5 @@ setInterval(rotateQuote, 10000);
   };
 });
 </script>
-</div>
+</body>
 </html>
