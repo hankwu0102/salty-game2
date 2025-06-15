@@ -254,12 +254,13 @@ body {
   color: #fff;
   box-shadow: 0 -4px 12px #4008;
 }
+
+
+
 </style>
 </head>
 <body style="padding-top: 80px;">
 <button class="neon-btn language-switch" id="langSwitch">English</button>
-<button id="playMusicBtn" style="font-size:1.1em;">🎵 播放音樂</button>
-<audio id="bgm" src="/workspaces/salty-game2/music/Echoes of Tomorrow.mp3"></audio>
 
 <!-- 說明彈窗（多分頁） -->
 <div id="infoModal" style="display:none;position:fixed;top:0;left:0;width:100vw;height:100vh;background:#000a;z-index:200;align-items:center;justify-content:center;">
@@ -1177,6 +1178,7 @@ window.addEventListener('DOMContentLoaded', function() {
         if (container) container.id = 'mainPanel';
       }
     }
+ 
   };
   // 自然侵蝕升級
   document.getElementById('naturalErosionBtn').onclick = function() {
@@ -1350,7 +1352,7 @@ V：溶液體積 (L)<br><br>
 公式：<code>質量% = 溶質質量 / 溶液總質量 × 100%</code><br>
 質量%：質量百分濃度<br>
 溶質質量：溶質的質量 (g)<br>
-溶液總質量：溶質 + 溶劑的總質量 (g)<br><br>
+溶液總質量：溺質 + 溶劑的總質量 (g)<br><br>
 <b>3. 體積百分濃度 (Volume %, v/v%)</b><br>
 公式：<code>體積% = 溶質體積 / 溶液體積 × 100%</code><br>
 體積%：體積百分濃度<br>
@@ -1478,30 +1480,51 @@ setInterval(rotateQuote, 10000);
     updateDisplay();
   };
 
-  // 播放音樂按鈕功能
-  document.getElementById('playMusicBtn').onclick = function() {
-  const audio = document.getElementById('bgm');
-  audio.currentTime = 0; // 從頭播放
-  audio.play();
-};
+  // 音樂播放器區塊（建議放在你想顯示的位置，例如主內容下方）
+  const musicHtml = `
+  <div id="musicFileName"></div>
+  <audio id="player" controls style="display: block; margin: 20px auto;">
+    <source src="music/Echoes of Tomorrow.mp3" type="audio/mpeg">
+    您的瀏覽器不支援 audio 元素。
+  </audio>
+  <div>
+    <button id="playBtn" title="播放">
+      <svg viewBox="0 0 24 24" fill="white"><path d="M8 5v14l11-7z"/></svg>
+    </button>
+    <button id="pauseBtn" title="暫停">
+      <svg viewBox="0 0 24 24" fill="white"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>
+    </button>
+    <button id="stopBtn" title="停止">
+      <svg viewBox="0 0 24 24" fill="white"><path d="M6 6h12v12H6z"/></svg>
+    </button>
+  </div>
+  `;
 
-  // 音樂控制按鈕
-  document.getElementById('toggleMusicBtn').onclick = function() {
-    const audio = document.getElementById('bgm');
-    if (audio.paused) {
-      audio.play();
-      this.textContent = '暫停音樂';
-    } else {
-      audio.pause();
-      this.textContent = '播放音樂';
-    }
+  // 將音樂播放器 HTML 插入到頁面
+  document.body.insertAdjacentHTML('beforeend', musicHtml);
+
+  const player = document.getElementById('player');
+  const playBtn = document.getElementById('playBtn');
+  const pauseBtn = document.getElementById('pauseBtn');
+  const stopBtn = document.getElementById('stopBtn');
+  const fileNameDiv = document.getElementById('musicFileName');
+
+  // 顯示檔名
+  const src = player.querySelector('source').getAttribute('src');
+  fileNameDiv.textContent = src ? src.split('/').pop() : '';
+
+  playBtn.onclick = function() {
+    player.play();
   };
 
-  // 音樂循環播放
-  document.getElementById('bgm').addEventListener('ended', function() {
-    this.currentTime = 0; // 從頭開始
-    this.play(); // 繼續播放
-  });
+  pauseBtn.onclick = function() {
+    player.pause();
+  };
+
+  stopBtn.onclick = function() {
+    player.pause();
+    player.currentTime = 0;
+  };
 });
 </script>
 </body>
