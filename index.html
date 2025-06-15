@@ -1480,51 +1480,6 @@ setInterval(rotateQuote, 10000);
     updateDisplay();
   };
 
-  // 音樂播放器區塊（建議放在你想顯示的位置，例如主內容下方）
-  const musicHtml = `
-  <div id="musicFileName"></div>
-  <audio id="player" controls style="display: block; margin: 20px auto;">
-    <source src="music/Echoes of Tomorrow.mp3" type="audio/mpeg">
-    您的瀏覽器不支援 audio 元素。
-  </audio>
-  <div>
-    <button id="playBtn" title="播放">
-      <svg viewBox="0 0 24 24" fill="white"><path d="M8 5v14l11-7z"/></svg>
-    </button>
-    <button id="pauseBtn" title="暫停">
-      <svg viewBox="0 0 24 24" fill="white"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>
-    </button>
-    <button id="stopBtn" title="停止">
-      <svg viewBox="0 0 24 24" fill="white"><path d="M6 6h12v12H6z"/></svg>
-    </button>
-  </div>
-  `;
-
-  // 將音樂播放器 HTML 插入到頁面
-  document.body.insertAdjacentHTML('beforeend', musicHtml);
-
-  const player = document.getElementById('player');
-  const playBtn = document.getElementById('playBtn');
-  const pauseBtn = document.getElementById('pauseBtn');
-  const stopBtn = document.getElementById('stopBtn');
-  const fileNameDiv = document.getElementById('musicFileName');
-
-  // 顯示檔名
-  const src = player.querySelector('source').getAttribute('src');
-  fileNameDiv.textContent = src ? src.split('/').pop() : '';
-
-  playBtn.onclick = function() {
-    player.play();
-  };
-
-  pauseBtn.onclick = function() {
-    player.pause();
-  };
-
-  stopBtn.onclick = function() {
-    player.pause();
-    player.currentTime = 0;
-  };
 });
 </script>
 </body>
