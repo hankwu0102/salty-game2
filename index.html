@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="zh-Hant">
 <head>
@@ -258,8 +257,9 @@ body {
 </style>
 </head>
 <body style="padding-top: 80px;">
-<audio id="bgm" src="music/Echoes of Tomorrow.mp3" autoplay loop controls></audio>
 <button class="neon-btn language-switch" id="langSwitch">English</button>
+<button id="playMusicBtn" style="font-size:1.1em;">🎵 播放音樂</button>
+<audio id="bgm" src="music/bgm.mp3"></audio>
 
 <!-- 說明彈窗（多分頁） -->
 <div id="infoModal" style="display:none;position:fixed;top:0;left:0;width:100vw;height:100vh;background:#000a;z-index:200;align-items:center;justify-content:center;">
@@ -1476,6 +1476,13 @@ setInterval(rotateQuote, 10000);
   document.getElementById('cheatSaltBtn').onclick = function() {
     saltMg = 100000000000;
     updateDisplay();
+  };
+
+  // 播放音樂按鈕功能
+  document.getElementById('playMusicBtn').onclick = function() {
+    const audio = document.getElementById('bgm');
+    audio.currentTime = 0; // 從頭播放
+    audio.play();
   };
 });
 </script>
