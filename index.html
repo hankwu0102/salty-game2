@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="zh-Hant">
 <head>
@@ -256,12 +255,125 @@ body {
   box-shadow: 0 -4px 12px #4008;
 }
 
+/* 升級樹樣式與動畫 */
+.upgrade-tree-backdrop {
+  position: fixed;
+  inset: 0;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  background: #000a;
+  z-index: 2500;
+}
+.upgrade-tree-modal {
+  background: linear-gradient(90deg, #142024b0 60%, #24241ab0 100%);
+  border: 2px solid #7fd7d7;
+  border-radius: 14px;
+  max-width: 720px;
+  width: calc(100vw - 40px);
+  color: #aee6e6;
+  box-shadow: 0 4px 24px #223b;
+  overflow: hidden;
+  animation: fadeInDisplay 0.35s ease-out;
+}
+.upgrade-tree-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  border-bottom: 1px solid #7fd7d7;
+}
+.upgrade-tree-canvas {
+  position: relative;
+  padding: 24px 24px 28px 24px;
+  overflow: auto;
+}
+.upgrade-node {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 200px;
+  height: 68px;
+  margin: 18px;
+  padding: 12px 18px;
+  background: #223233;
+  color: #f7c873;
+  border: 2px solid #7fd7d7;
+  border-radius: 10px;
+  box-shadow: 0 0 12px #7fd7d744, 0 2px 8px #223b;
+  cursor: default;
+  user-select: none;
+  transform-origin: center;
+  animation: nodePop 420ms ease-out;
+}
+.upgrade-node.sample { opacity: 0.9; }
+.upgrade-node:hover {
+  border-color: #f7c873;
+  color: #f7c873;
+  transform: translateY(-2px) scale(1.02);
+  box-shadow: 0 0 20px #f7c87366, 0 4px 14px #223b;
+  transition: all 120ms ease-out;
+}
+@keyframes nodePop {
+  0% { transform: scale(0.92); opacity: 0; }
+  60% { transform: scale(1.06); opacity: 1; }
+  100% { transform: scale(1); }
+}
+.connector {
+  position: absolute;
+  height: 2px;
+  background: linear-gradient(90deg, #7fd7d7, #f7c873);
+  box-shadow: 0 0 10px #7fd7d755;
+  transform-origin: 0 0;
+  animation: growLine 500ms ease-out;
+}
+@keyframes growLine {
+  from { transform: scaleX(0); opacity: 0; }
+  to { transform: scaleX(1); opacity: 1; }
+}
+.glow-pulse { animation: glowPulse 1.6s ease-in-out infinite; }
+@keyframes glowPulse {
+  0% { box-shadow: 0 0 8px #7fd7d733; }
+  50% { box-shadow: 0 0 18px #f7c87366; }
+  100% { box-shadow: 0 0 8px #7fd7d733; }
+}
 
+/* 升級樹提示框 */
+.upgrade-tooltip {
+  position: fixed;
+  z-index: 4000;
+  pointer-events: none;
+  background: #223233;
+  color: #aee6e6;
+  border: 1px solid #7fd7d7;
+  border-radius: 8px;
+  padding: 8px 10px;
+  font-size: 0.95em;
+  box-shadow: 0 4px 16px #223b;
+  opacity: 0;
+  transition: opacity 120ms ease-out;
+}
 
 </style>
 </head>
 <body style="padding-top: 80px;">
+<div id="globalSwitchBar" style="position:fixed;top:0;left:0;width:100vw;background:#1a2324;z-index:1200;display:flex;justify-content:center;gap:16px;padding:10px 0 6px 0;box-shadow:0 2px 12px #223b;">
+  <button id="tabMain" class="neon-btn" style="border-color:#f7c873;color:#f7c873;background:#223233;">溶解</button>
+  <button id="tabTree" class="neon-btn" style="border-color:#7fd7d7;color:#7fd7d7;background:#223233;">升級樹</button>
+</div>
 <button class="neon-btn language-switch" id="langSwitch">English</button>
+
+<!-- 升級樹獨立面板（與主面板分離） -->
+<div id="upgradeTreePanel" style="display:none;margin:24px auto 0 auto;padding:0 0 18px 0;max-width:1100px;width:100%;">
+  <div id="treeWrapper" style="position:relative;background:#142024b0;border:1px solid #7fd7d7;border-radius:10px;margin-top:14px;overflow:auto;height:860px;">
+    <svg id="treeLines" width="2000" height="2000" style="position:absolute;left:0;top:0;filter:drop-shadow(0 0 6px #223);"></svg>
+    <div id="treeNodes" style="position:relative;padding:18px 6px 24px 6px;display:block;min-height:1800px;">
+      <!-- 節點由 JS 產生 -->
+    </div>
+  </div>
+  <div id="treeHelperText" style="text-align:center;color:#b5cfcf;margin-top:8px;">使用 超越點數 購買節點</div>
+  </div>
 
 <!-- 說明彈窗（多分頁） -->
 <div id="infoModal" style="display:none;position:fixed;top:0;left:0;width:100vw;height:100vh;background:#000a;z-index:200;align-items:center;justify-content:center;">
@@ -270,10 +382,6 @@ body {
     <div style="padding:18px 20px 0 20px;">
       <select id="infoTabSelect" style="width:100%;padding:8px 6px;font-size:1em;border-radius:6px;background:#223233;color:#f7c873;border:1.5px solid #7fd7d7;">
         <option value="howto">玩法說明</option>
-        <option value="salt">鹽分系統</option>
-        <option value="upgrade">升級</option>
-        <option value="acid">酸性怪物</option>
-        <option value="special">特殊功能</option>
       </select>
     </div>
     <div id="infoTabContent" style="padding:24px 20px 18px 20px;max-height:65vh;overflow-y:auto;">
@@ -498,6 +606,7 @@ body {
     <div style="margin-top:14px;color:#ff4444;font-weight:bold;font-size:1em;">
       ⚠️ 超越會重置所有進度，請謹慎操作！
     </div>
+    </div>
   </div>
   <div class="credits"
   data-zh="升級名稱由 you_3009 提供"
@@ -585,6 +694,10 @@ window.addEventListener('DOMContentLoaded', function() {
       transcendTip: "超越後將獲得永久加成，並重置所有進度。",
       transcendWarn: "⚠️ 超越會重置所有進度，請謹慎操作！",
       upgradeBy: "升級名稱由 you_3009 提供",
+      upgradeTree: "升級樹",
+      treeHelper: "使用 超越點數 購買節點",
+      treeLocked: "升級樹需要至少 1 點超越點數後解鎖。",
+      costPts: "花費：",
       copyright: "© 2025 鹽分實驗室 | 科學放置遊戲"
     },
     en: {
@@ -655,6 +768,10 @@ window.addEventListener('DOMContentLoaded', function() {
       transcendTip: "Transcend for permanent bonus, resets all progress.",
       transcendWarn: "⚠️ Transcend will reset all progress. Be careful!",
       upgradeBy: "Upgrade names by you_3009",
+      upgradeTree: "Upgrade Tree",
+      treeHelper: "Use Transcend Points to buy nodes",
+      treeLocked: "Upgrade Tree unlocks after you have at least 1 Transcend Point.",
+      costPts: "Cost: ",
       copyright: "© 2025 Salt Laboratory | Science Idle Game"
     }
   };
@@ -687,7 +804,8 @@ window.addEventListener('DOMContentLoaded', function() {
     { zh: "硫酸銨 ((NH₄)₂SO₄)", en: "Ammonium Sulfate ((NH₄)₂SO₄)" },
     { zh: "硝酸鈉 (NaNO₃)", en: "Sodium Nitrate (NaNO₃)" },
     { zh: "氯化鈣 (CaCl₂)", en: "Calcium Chloride (CaCl₂)" },
-    { zh: "硫酸鈉 (Na₂SO₄)", en: "Sodium Sulfate (Na₂SO₄)" }
+    { zh: "硫酸鈉 (Na₂SO₄)", en: "Sodium Sulfate (Na₂SO₄)" },
+    { zh: "硫酸鈣 (CaSO₄)", en: "Calcium Sulfate (CaSO₄)" }
   ];
   let currentCompound = 0;
 
@@ -804,7 +922,7 @@ window.addEventListener('DOMContentLoaded', function() {
   // 研究倍率與門檻
   let resetMultiplier = 1.0;
   let nextMultiplier = 1.5;
-  const researchThresholds = [1000, 2000, 4000, 8000, 16000, 32000, 64000, 128000, 256000, 512000];
+  const researchThresholds = [1000, 2000, 4000, 8000, 16000, 32000, 64000, 128000, 256000, 512000, 1024000];
 
   // 更新研究進度顯示
   function updateResearchUI() {
@@ -817,10 +935,9 @@ window.addEventListener('DOMContentLoaded', function() {
     document.getElementById('nextResearchPpm').textContent = req.toFixed(3);
     document.getElementById('resetMultiplier').textContent = resetMultiplier.toFixed(1);
     document.getElementById('nextMultiplier').textContent = nextMultiplier.toFixed(1);
-    // 超越條件顯示
-    document.getElementById('superResetReq').textContent = `${currentCompound}/${compounds.length}`;
-    // 超越按鈕啟用條件
-    document.getElementById('superResetBtn').disabled = !(currentCompound >= compounds.length - 1);
+  // 超越條件顯示與啟用：需要至少 9 次研究完成
+  document.getElementById('superResetReq').textContent = `${currentCompound}/${Math.min(9, compounds.length)}`;
+  document.getElementById('superResetBtn').disabled = !(currentCompound >= 9);
   }
 
   // 點擊添加鹽分時給實驗點數
@@ -884,292 +1001,18 @@ window.addEventListener('DOMContentLoaded', function() {
     resetMultiplier = 1.0;
     nextMultiplier = 1.5;
     expPoints = 0;
+    // 每次超越：重置升級樹購買與位置，給 1 TP
     let transcend = parseInt(document.getElementById('transcendPoints').textContent) || 0;
     document.getElementById('transcendPoints').textContent = transcend + 1;
+    purchasedUpgrades.clear();
+    localStorage.removeItem('slab_purchased');
+    localStorage.removeItem('slab_tree_pos');
+    treeSpec = buildTreeSpec();
+    renderTree();
     updateDisplay();
     updateResearchUI();
 
-    // 新增：在螢幕最上方新增"溶解"和"析出"按鈕
-    if (!document.getElementById('dissolveSwitchBtn')) {
-      // 建立容器
-      const switchBar = document.createElement('div');
-      switchBar.id = 'switchBar';
-      switchBar.style.position = 'fixed';
-      switchBar.style.top = '0';
-      switchBar.style.left = '0';
-      switchBar.style.width = '100vw';
-      switchBar.style.background = '#1a2324';
-      switchBar.style.zIndex = '9999';
-      switchBar.style.display = 'flex';
-      switchBar.style.justifyContent = 'center';
-      switchBar.style.gap = '16px';
-      switchBar.style.padding = '10px 0 6px 0';
-      switchBar.style.boxShadow = '0 2px 12px #223b';
-
-      // 溶解按鈕
-      const dissolveBtn = document.createElement('button');
-      dissolveBtn.id = 'dissolveSwitchBtn';
-      dissolveBtn.className = 'neon-btn';
-      dissolveBtn.textContent = '溶解';
-      dissolveBtn.style.fontWeight = 'bold';
-      dissolveBtn.style.borderColor = '#f7c873';
-      dissolveBtn.style.background = '#223233';
-      dissolveBtn.onclick = function() {
-        // 切回主面板
-        document.getElementById('mainPanel').style.display = '';
-        let precipPanel = document.getElementById('precipitatePanel');
-        if (precipPanel) precipPanel.style.display = 'none';
-        dissolveBtn.style.borderColor = '#f7c873';
-        precipitateBtn.style.borderColor = '#7fd7d7';
-      };
-
-      // 析出按鈕
-      const precipitateBtn = document.createElement('button');
-      precipitateBtn.id = 'precipitateSwitchBtn';
-      precipitateBtn.className = 'neon-btn';
-      precipitateBtn.textContent = '析出';
-      precipitateBtn.style.borderColor = '#7fd7d7';
-      precipitateBtn.onclick = function() {
-        document.getElementById('mainPanel').style.display = 'none';
-        let precipPanel = document.getElementById('precipitatePanel');
-        if (!precipPanel) {
-          precipPanel = document.createElement('div');
-          precipPanel.id = 'precipitatePanel';
-          precipPanel.style.marginTop = '100px';
-          precipPanel.style.color = '#aee6e6';
-          precipPanel.style.textAlign = 'center';
-          precipPanel.innerHTML = `
-            <div style="display:flex;flex-direction:column;align-items:center;">
-              <div style="display:flex;align-items:center;gap:12px;margin-bottom:10px;">
-                <button id="inventoryBtn" class="neon-btn" style="font-size:1em;padding:6px 18px;border-radius:8px;background:#223233;color:#7fd7d7;border:2px solid #7fd7d7;cursor:pointer;font-weight:bold;">物品欄</button>
-              </div>
-              <div style="font-size:2em;margin-bottom:18px;font-weight:bold;">金屬析出</div>
-            </div>
-            <div id="precipitateTabs" style="display:none;max-width:400px;margin:0 auto 18px auto;padding:18px 0 18px 0;background:#142024b0;border:1px solid #7fd7d7;border-radius:8px;">
-              <div style="font-size:1.2em;color:#7fd7d7;margin-bottom:8px;">物品欄分頁</div>
-              <div id="inventoryContent" style="color:#aee6e6;text-align:left;max-width:340px;margin:0 auto;">
-                <div><b>岩鹽</b> (NaCl)：<span id="inv_nacl">0</span></div>
-                <div><b>石膏</b> (CaSO₄·2H₂O)：<span id="inv_gypsum">0</span></div>
-                <div><b>硬石膏</b> (CaSO₄)：<span id="inv_anhydrite">0</span></div>
-                <div><b>鉀鹽</b> (KCl)：<span id="inv_kcl">0</span></div>
-                <div><b>鉀鎂鹽</b> (KMgCl₃·6H₂O)：<span id="inv_kmgcl3">0</span></div>
-                <div><b>比紹石</b> (MgCl₂·6H₂O)：<span id="inv_bischofite">0</span></div>
-                <div><b>多鹽石</b> (K₂Ca₂Mg(SO₄)₄·2H₂O)：<span id="inv_polyhalite">0</span></div>
-                <div><b>芒硝</b> (Na₂SO₄·10H₂O)：<span id="inv_glauber">0</span></div>
-                <div><b>瀉鹽</b> (MgSO₄·7H₂O)：<span id="inv_epsomite">0</span></div>
-              </div>
-            </div>
-            <div style="background:#142024b0;border:1px solid #7fd7d7;border-radius:8px;max-width:400px;margin:0 auto;padding:18px 0 18px 0;">
-              <!-- 反應物欄位 -->
-              <div style="font-size:1.1em;color:#7fd7d7;margin-bottom:8px;">反應物</div>
-              <div style="display:flex;gap:18px;align-items:center;justify-content:center;margin-bottom:12px;">
-                <div>
-                  <label for="reactantSelect" style="color:#f7c873;">選擇反應物</label>
-                  <select id="reactantSelect" style="width:160px;">
-                    <option value="nacl">岩鹽 (NaCl)</option>
-                    <option value="gypsum">石膏 (CaSO₄·2H₂O)</option>
-                    <option value="anhydrite">硬石膏 (CaSO₄)</option>
-                    <option value="kcl">鉀鹽 (KCl)</option>
-                    <option value="kmgcl3">鉀鎂鹽 (KMgCl₃·6H₂O)</option>
-                    <option value="bischofite">比紹石 (MgCl₂·6H₂O)</option>
-                    <option value="polyhalite">多鹽石 (K₂Ca₂Mg(SO₄)₄·2H₂O)</option>
-                    <option value="glauber">芒硝 (Na₂SO₄·10H₂O)</option>
-                    <option value="epsomite">瀉鹽 (MgSO₄·7H₂O)</option>
-                  </select>
-                </div>
-                <div>
-                  <label for="soluteMoleInput" style="color:#f7c873;">溶質莫耳數</label>
-                  <input id="soluteMoleInput" type="number" min="0" max="100" value="1" step="0.01" style="width:60px;text-align:right;"> mol
-                </div>
-                <div>
-                  <label for="solutionVolumeInput" style="color:#f7c873;">溶液體積</label>
-                  <input id="solutionVolumeInput" type="number" min="0" max="1000" value="100" style="width:60px;text-align:right;"> mL
-                </div>
-              </div>
-              <!-- 反應條件 -->
-              <div style="font-size:1.2em;color:#f7c873;margin-bottom:8px;">反應條件</div>
-              <div style="display:flex;gap:18px;align-items:center;justify-content:center;margin-bottom:12px;">
-                <div>
-                  <label for="tempInput" style="color:#f7c873;">溫度</label>
-                  <input id="tempInput" type="number" min="0" max="200" value="25" style="width:60px;text-align:right;"> ℃
-                </div>
-                <div>
-                  <label for="pressureInput" style="color:#f7c873;">壓力</label>
-                  <input id="pressureInput" type="number" min="0" max="10" step="0.1" value="1" style="width:60px;text-align:right;"> atm
-                </div>
-                <div>
-                  <label for="voltageInput" style="color:#f7c873;">電壓</label>
-                  <input id="voltageInput" type="number" min="0" max="100" step="0.1" value="0" style="width:60px;text-align:right;"> V
-                </div>
-              </div>
-              <div id="precipitateData"></div>
-            </div>
-          `;
-          
-          document.body.appendChild(precipPanel);
-
-          // 初始化變數與事件
-          let temperature = 25, pressure = 1, voltage = 0;
-          let soluteMole = 1, solutionVolume = 100;
-          document.getElementById('tempInput').oninput = function() {
-            temperature = parseFloat(this.value) || 0;
-          };
-          document.getElementById('pressureInput').oninput = function() {
-            pressure = parseFloat(this.value) || 0;
-          };
-          document.getElementById('voltageInput').oninput = function() {
-            voltage = parseFloat(this.value) || 0;
-          };
-          document.getElementById('soluteMoleInput').oninput = function() {
-            soluteMole = parseFloat(this.value) || 0;
-          };
-          document.getElementById('solutionVolumeInput').oninput = function() {
-            solutionVolume = parseFloat(this.value) || 0;
-          };
-          const inventoryBtn = precipPanel.querySelector('#inventoryBtn');
-          let inventoryPanel = null;
-          if (inventoryBtn) {
-            inventoryBtn.onclick = function () {
-              // 若已存在則切換顯示/隱藏
-              if (inventoryPanel) {
-                inventoryPanel.style.display = (inventoryPanel.style.display === 'none' ? 'block' : 'none');
-                return;
-              }
-              // 建立物品欄介面
-              inventoryPanel = document.createElement('div');
-              inventoryPanel.id = 'inventoryPanel';
-              inventoryPanel.style.position = 'fixed';
-              inventoryPanel.style.top = '120px';
-              inventoryPanel.style.left = '50%';
-              inventoryPanel.style.transform = 'translateX(-50%)';
-              inventoryPanel.style.background = '#1a2324';
-              inventoryPanel.style.border = '2px solid #7fd7d7';
-              inventoryPanel.style.borderRadius = '12px';
-              inventoryPanel.style.boxShadow = '0 4px 24px #223b';
-              inventoryPanel.style.padding = '28px 32px 24px 32px';
-              inventoryPanel.style.zIndex = '20000';
-              inventoryPanel.style.color = '#aee6e6';
-              inventoryPanel.style.minWidth = '320px';
-              inventoryPanel.style.maxWidth = '90vw';
-              inventoryPanel.innerHTML = `
-                <div style="font-size:1.4em;color:#7fd7d7;margin-bottom:16px;font-weight:bold;">物品欄</div>
-                <div style="text-align:left;line-height:2;">
-                  <div><b>岩鹽</b> (NaCl)：<span id="inv_nacl">0</span></div>
-                  <div><b>石膏</b> (CaSO₄·2H₂O)：<span id="inv_gypsum">0</span></div>
-                  <div><b>硬石膏</b> (CaSO₄)：<span id="inv_anhydrite">0</span></div>
-                  <div><b>鉀鹽</b> (KCl)：<span id="inv_kcl">0</span></div>
-                  <div><b>鉀鎂鹽</b> (KMgCl₃·6H₂O)：<span id="inv_kmgcl3">0</span></div>
-                  <div><b>比紹石</b> (MgCl₂·6H₂O)：<span id="inv_bischofite">0</span></div>
-                  <div><b>多鹽石</b> (K₂Ca₂Mg(SO₄)₄·2H₂O)：<span id="inv_polyhalite">0</span></div>
-                  <div><b>芒硝</b> (Na₂SO₄·10H₂O)：<span id="inv_glauber">0</span></div>
-                  <div><b>瀉鹽</b> (MgSO₄·7H₂O)：<span id="inv_epsomite">0</span></div>
-                </div>
-                <button id="closeInventoryBtn" class="neon-btn" style="margin-top:18px;padding:6px 22px;">關閉</button>
-              `;
-              document.body.appendChild(inventoryPanel);
-              // 關閉按鈕
-              inventoryPanel.querySelector('#closeInventoryBtn').onclick = function() {
-                inventoryPanel.style.display = 'none';
-              };
-            };
-          }
-
-          // 1. 在反應物區塊下方插入「合成」按鈕
-          const reactantDiv = precipPanel.querySelector('#reactantSelect').parentElement.parentElement;
-          const synthBtn = document.createElement('button');
-          synthBtn.id = 'synthesizeBtn';
-          synthBtn.className = 'neon-btn';
-          synthBtn.style.marginLeft = '18px';
-          synthBtn.textContent = '合成';
-          reactantDiv.appendChild(synthBtn);
-
-          // 2. 建立物品欄數據（如未有可自行補上）
-          let inventory = {
-            nacl: 0,
-            gypsum: 0,
-            anhydrite: 0,
-            kcl: 0,
-            kmgcl3: 0,
-            bischofite: 0,
-            polyhalite: 0,
-            glauber: 0,
-            epsomite: 0
-          };
-
-          // 3. 合成邏輯
-          synthBtn.onclick = function() {
-            const reactant = document.getElementById('reactantSelect').value;
-            const solVol = parseFloat(document.getElementById('solutionVolumeInput').value) || 0;
-            const temp = parseFloat(document.getElementById('tempInput').value) || 0;
-            const voltage = parseFloat(document.getElementById('voltageInput').value) || 0;
-            const pressure = parseFloat(document.getElementById('pressureInput').value) || 0;
-
-            // 條件判斷
-            let condCount = 0;
-            if (reactant === 'nacl') {
-              if (solVol === 0) condCount++;
-              if (temp > 600 && temp < 900) condCount++;
-              if (voltage > 5 && voltage < 8) condCount++;
-              if (pressure === 1) condCount++;
-            } else if (reactant === 'kcl') {
-              if (solVol === 0) condCount++;
-              if (temp > 600) condCount++;
-              if (voltage > 1 && voltage < 3) condCount++;
-              if (pressure === 1) condCount++;
-            } else if (reactant === 'gypsum' || reactant === 'anhydrite') {
-              if (solVol > 0) condCount++;
-              if (temp > 60 && temp < 100) condCount++;
-              if (voltage > 2 && voltage < 3) condCount++;
-              if (pressure === 1) condCount++;
-            } else if (reactant === 'kmgcl3' || reactant === 'bischofite') {
-              if (solVol === 0) condCount++;
-              if (temp > 200) condCount++;
-              if (voltage > 3 && voltage < 5) condCount++;
-              if (pressure === 1) condCount++;
-            } else if (reactant === 'glauber' || reactant === 'epsomite') {
-              // 芒硝 或 瀉鹽
-              if (solVol === 0) condCount++;
-              if (temp > 500) condCount++;
-              if (voltage > 4 && voltage < 6) condCount++;
-              if (pressure === 1) condCount++;
-            }
-            // 依條件數給機率
-            let prob = 0.2 * condCount;
-            if (prob > 0) {
-              if (Math.random() < prob) {
-                inventory[reactant] = (inventory[reactant] || 0) + 1;
-                // 更新所有物品欄顯示（所有同名 id 都要更新）
-                document.querySelectorAll('#inv_' + reactant).forEach(function(invSpan) {
-                  invSpan.textContent = inventory[reactant];
-                });
-                alert('合成成功！');
-              } else {
-                alert('合成失敗，請再嘗試。');
-              }
-            } else {
-              alert('條件未達成，請調整參數。');
-            }
-          };
-        }
-        precipPanel.style.display = '';
-        dissolveBtn.style.borderColor = '#7fd7d7';
-        precipitateBtn.style.borderColor = '#f7c873';
-      };
-      switchBar.appendChild(dissolveBtn);
-      switchBar.appendChild(precipitateBtn);
-      document.body.appendChild(switchBar);
-
-      // 主面板加 id 方便切換（只加一次）
-      let mainPanel = document.getElementById('mainPanel');
-      if (!mainPanel) {
-        // 假設 .container 是主面板
-        const container = document.querySelector('.container');
-        if (container) container.id = 'mainPanel';
-      }
-    }
- 
-
-
+    // 析出功能已移除
   };
   // 自然侵蝕升級
   document.getElementById('naturalErosionBtn').onclick = function() {
@@ -1274,6 +1117,303 @@ window.addEventListener('DOMContentLoaded', function() {
   // 頁面載入時初始化語言
   translateAll();
   updateDisplay();
+
+  // ----- 升級樹資料與渲染 -----
+  function buildTreeSpec() {
+    const nodes = [];
+    const edges = [];
+    const effectPool = [
+      { type: 'mult', value: 1.02 },
+      { type: 'evap_boost', value: 0.3 },
+      { type: 'click_boost', value: 0.07 },
+      { type: 'auto_boost', value: 0.12 },
+      { type: 'cooldown_boost', value: 12 },
+      { type: 'salt_add_boost', value: 0.1 },
+      { type: 'ppm_cap_boost', value: 5 },
+      { type: 'research_gain', value: 0.05 },
+      { type: 'exp_gain', value: 0.1 },
+      { type: 'water_loss_reduction', value: 0.05 },
+      { type: 'auto_tick_rate', value: 0.05 },
+      { type: 'prestige_mult', value: 1.03 },
+      { type: 'softcap_relief', value: 0.05 },
+      { type: 'offline_boost', value: 0.1 },
+      { type: 'rng_bonus', value: 0.05 }
+    ];
+    const namePool = [
+      'Crystal Bloom','Phase Node','Ion Lattice','Salt Prism','Wave Core','Flux Gate','Phase Stitch','Ionic Bridge','Drift Anchor','Pulse Node',
+      'Cavitation','Sea Glass','Brine Wheel','Tide Spoke','Quartz Link','Anode Relay','Cathode Seal','Resonator','Harmonic Hub','Delta Fork',
+      'Kelvin Spike','Omega Knot','Sigma Coil','Lambda Loop','Gamma Spark','Beta Drift','Alpha Seed','Echo Core','Nova Thread','Sol Gate',
+      'Aqua Lens','Polar Key','Salinity Pin','Molar Grid','Vapor Spur','Hydro Lock','Prism Stem','Ion Saddle','Crystal Spine','Phase Loom'
+    ];
+    // 累進列寬：第1列2個、第2列3個...
+    const target = 100;
+    const rowHeights = 84; const startY = 24;
+    let produced = 0; let row = 0; let idCounter = 0;
+    function seededInt(str){ let h=0; for(let i=0;i<str.length;i++){ h=((h<<5)-h)+str.charCodeAt(i); h|=0; } return Math.abs(h); }
+    while (produced < target) {
+      row++;
+      const count = row + 1; // 1->2, 2->3, etc.
+      const y = startY + (row-1) * (rowHeights+10);
+      const totalWidth = 980; // wider logical width for placement
+      const spacing = Math.min(160, Math.floor(totalWidth / (count+1)));
+      const placedXs = [];
+      for (let i = 0; i < count; i++) {
+        if (produced >= target) break;
+        idCounter++;
+        const id = `n${idCounter}`;
+        const name = namePool[idCounter % namePool.length] + ' ' + (Math.floor(idCounter / namePool.length) + 1);
+        const xCenter = Math.floor(totalWidth/(count+1) * (i+1));
+        let x = Math.max(10, xCenter + ((seededInt(id) % 20) - 10));
+        // 簡單防碰撞：與同列既有 x 保持至少 140px 間距
+        placedXs.forEach(px => { if (Math.abs(x - px) < 140) x = px + 140; });
+        placedXs.push(x);
+        const effect = effectPool[idCounter % effectPool.length];
+        // 成本：基於行與列位置的隨機但穩定值，且 >=1
+        const base = idCounter; // 位置主導
+        const rand = (seededInt(id + 'c') % 4) - 1; // -1..2
+        const cost = Math.max(1, base + rand);
+        nodes.push({ id, name, x, y, cost, effect });
+        // 邊：連接上一行中最接近的節點
+        if (row > 1) {
+          const prevStart = idCounter - count - (row); // 近似上一行開始索引
+          const parentIdx = Math.max(1, idCounter - (count) - (i>0?0:1));
+          const fromId = `n${Math.max(1,parentIdx)}`;
+          edges.push([fromId, id]);
+        }
+        produced++;
+      }
+    }
+    return { nodes, edges };
+  }
+  let treeSpec = buildTreeSpec();
+  const purchasedUpgrades = new Set(JSON.parse(localStorage.getItem('slab_purchased')||'[]'));
+  const savedPositions = JSON.parse(localStorage.getItem('slab_tree_pos')||'{}');
+  treeSpec.nodes.forEach(n=>{ if (savedPositions[n.id]) { n.x = savedPositions[n.id].x; n.y = savedPositions[n.id].y; }});
+
+  function applyUpgrade(effect){
+    if (!effect) return;
+    if (effect.type === 'mult') {
+      resetMultiplier *= effect.value;
+    } else if (effect.type === 'evap_boost') {
+      evaporationLv += effect.value; // 輕量示例：直接加等級的分數
+    } else if (effect.type === 'click_boost') {
+      naturalErosionLv += Math.round(effect.value * 10);
+    } else if (effect.type === 'auto_boost') {
+      autoDissolveLv += Math.round(effect.value * 10);
+    } else if (effect.type === 'cooldown_boost') {
+      fasterLaborLv += Math.round(effect.value / 20);
+    } else if (effect.type === 'salt_add_boost') {
+      naturalErosionLv += Math.round(effect.value * 12);
+    } else if (effect.type === 'ppm_cap_boost') {
+      maxSaltPpm += effect.value;
+    } else if (effect.type === 'research_gain') {
+      research = Math.min(100, research + effect.value*100);
+    } else if (effect.type === 'exp_gain') {
+      expPoints += Math.round(effect.value * 10);
+    } else if (effect.type === 'water_loss_reduction') {
+      evaporationLv = Math.max(0, evaporationLv - effect.value);
+    } else if (effect.type === 'auto_tick_rate') {
+      // 模擬：提高自動溶解等效等級
+      autoDissolveLv += Math.round(effect.value * 8);
+    } else if (effect.type === 'prestige_mult') {
+      nextMultiplier = (nextMultiplier * effect.value);
+    } else if (effect.type === 'softcap_relief') {
+      // 放鬆 softcap：調高有效水量
+      waterVolume = Math.max(waterVolume, 80);
+    } else if (effect.type === 'offline_boost') {
+      expPoints += Math.round(effect.value * 20);
+    } else if (effect.type === 'rng_bonus') {
+      // 小型隨機加成
+      const bonus = Math.random() * effect.value * 10;
+      expPoints += Math.round(bonus);
+    }
+    updateDisplay();
+  }
+
+  function canBuy(node){
+    // 需要至少一個父節點已購買，或本身是根
+    const parents = treeSpec.edges.filter(e => e[1] === node.id).map(e => e[0]);
+    const isRoot = parents.length === 0;
+    const parentOk = isRoot || parents.some(pid => purchasedUpgrades.has(pid));
+    const tp = parseInt((document.getElementById('transcendPoints')||{textContent:'0'}).textContent)||0;
+    return parentOk && tp >= node.cost && !purchasedUpgrades.has(node.id);
+  }
+
+  function drawLines(){
+    const lines = document.getElementById('treeLines');
+    if (!lines) return;
+    lines.innerHTML = '';
+    treeSpec.edges.forEach(([fromId,toId], idx) => {
+      const from = treeSpec.nodes.find(n => n.id === fromId);
+      const to = treeSpec.nodes.find(n => n.id === toId);
+      if (!from || !to) return;
+      // 使用節點實際寬高中心點
+      const fromEl = document.querySelector(`.upgrade-node[data-node-id="${from.id}"]`);
+      const toEl = document.querySelector(`.upgrade-node[data-node-id="${to.id}"]`);
+      const fromW = fromEl ? fromEl.offsetWidth : 200;
+      const fromH = fromEl ? fromEl.offsetHeight : 68;
+      const toW = toEl ? toEl.offsetWidth : 200;
+      const toH = toEl ? toEl.offsetHeight : 68;
+      const x1 = from.x + fromW/2, y1 = from.y + fromH/2;
+      const x2 = to.x + toW/2, y2 = to.y + toH/2;
+      const mx = (x1 + x2) / 2;
+      const offset = ((idx % 2) ? -20 : 20);
+      const path = document.createElementNS('http://www.w3.org/2000/svg','path');
+      path.setAttribute('d', `M ${x1},${y1} C ${mx},${y1+offset} ${mx},${y2-offset} ${x2},${y2}`);
+      path.setAttribute('stroke', '#7fd7d7');
+      path.setAttribute('stroke-width', '2');
+      path.setAttribute('fill', 'none');
+      path.style.filter = 'drop-shadow(0 0 4px #7fd7d7)';
+      lines.appendChild(path);
+    });
+  }
+
+  function renderTree(){
+    const canvas = document.getElementById('treeNodes');
+    if (!canvas) return;
+    canvas.innerHTML = '';
+    const lines = document.getElementById('treeLines');
+    if (lines) lines.innerHTML = '';
+    const tp = parseInt((document.getElementById('transcendPoints')||{textContent:'0'}).textContent)||0;
+    const helper = document.getElementById('treeHelperText');
+    if (helper) helper.textContent = (currentLang==='zh'? langData.zh.treeHelper : langData.en.treeHelper);
+    // 未解鎖：顯示鎖定提示
+    if (tp < 1 && (!purchasedUpgrades.size)) {
+      const lockMsg = (currentLang==='zh'? langData.zh.treeLocked : langData.en.treeLocked);
+      const msg = document.createElement('div');
+      msg.style.textAlign = 'center';
+      msg.style.padding = '36px 0';
+      msg.style.color = '#b5cfcf';
+      msg.textContent = lockMsg;
+      canvas.appendChild(msg);
+      return;
+    }
+    // 編號：依 y 再 x 排序（每次 render 更新）
+    const ordered = [...treeSpec.nodes].sort((a,b) => (a.y - b.y) || (a.x - b.x));
+    const numbering = new Map();
+    ordered.forEach((n,i)=> numbering.set(n.id, i+1));
+    // 先畫線（稍後也會重畫一次以防）
+    drawLines();
+    // 畫節點
+    treeSpec.nodes.forEach(node => {
+      const el = document.createElement('div');
+      el.className = 'upgrade-node sample';
+      el.style.position = 'absolute';
+      el.style.left = node.x + 'px';
+      el.style.top = node.y + 'px';
+      const num = numbering.get(node.id);
+      const label = `${num}. ${node.name}`;
+      const ptsNameShort = 'TP';
+      el.textContent = `${label} (${node.cost}${ptsNameShort})`;
+      el.dataset.nodeId = node.id;
+      if (purchasedUpgrades.has(node.id)) {
+        el.style.borderColor = '#f7c873';
+        el.style.color = '#f7c873';
+        el.classList.add('glow-pulse');
+      }
+      // 提示框
+      el.onmouseenter = function(){
+        const tip = getTooltip();
+        tip.innerHTML = getEffectText(node);
+        tip.style.opacity = '1';
+      };
+      el.onmouseleave = function(){ hideTooltip(); };
+      el.onmousemove = function(e){ moveTooltip(e.clientX, e.clientY); };
+      // 購買
+      el.onclick = function(){
+        if (canBuy(node)) {
+          const tpEl = document.getElementById('transcendPoints');
+          let tp = parseInt(tpEl.textContent)||0;
+          tp -= node.cost;
+          tpEl.textContent = tp;
+          purchasedUpgrades.add(node.id);
+          applyUpgrade(node.effect);
+          localStorage.setItem('slab_purchased', JSON.stringify([...purchasedUpgrades]));
+          renderTree();
+        }
+      };
+      // 拖曳
+      makeDraggable(el, node);
+      canvas.appendChild(el);
+    });
+    // 確保線條與最新位置一致
+    drawLines();
+  }
+  renderTree();
+
+  // --- 提示框輔助 ---
+  let tooltipEl = null;
+  function getTooltip(){
+    if (!tooltipEl) {
+      tooltipEl = document.createElement('div');
+      tooltipEl.className = 'upgrade-tooltip';
+      document.body.appendChild(tooltipEl);
+    }
+    return tooltipEl;
+  }
+  function hideTooltip(){ if (tooltipEl) tooltipEl.style.opacity = '0'; }
+  function moveTooltip(x,y){ if (tooltipEl){ tooltipEl.style.left = (x+12)+'px'; tooltipEl.style.top = (y+12)+'px'; } }
+  function getEffectText(node){
+    const n = node.name;
+    const c = node.cost;
+    const e = node.effect;
+    let desc = '';
+    if (e.type === 'mult') desc = currentLang==='zh' ? `全域倍率 x${e.value.toFixed(2)}` : `Global multiplier x${e.value.toFixed(2)}`;
+    else if (e.type === 'evap_boost') desc = currentLang==='zh' ? `蒸發效率 +${e.value}` : `Evaporation efficiency +${e.value}`;
+    else if (e.type === 'click_boost') desc = currentLang==='zh' ? `點擊效率 +${Math.round(e.value*100)}%` : `Click efficiency +${Math.round(e.value*100)}%`;
+    else if (e.type === 'auto_boost') desc = currentLang==='zh' ? `自動溶解效率 +${Math.round(e.value*100)}%` : `Auto dissolve +${Math.round(e.value*100)}%`;
+    else if (e.type === 'cooldown_boost') desc = currentLang==='zh' ? `冷卻縮短 -${e.value}ms` : `Cooldown -${e.value}ms`;
+    else if (e.type === 'salt_add_boost') desc = currentLang==='zh' ? `基礎添加 +${Math.round(e.value*100)}%` : `Base add +${Math.round(e.value*100)}%`;
+    else if (e.type === 'ppm_cap_boost') desc = currentLang==='zh' ? `上限 +${e.value}` : `Cap +${e.value}`;
+    else if (e.type === 'research_gain') desc = currentLang==='zh' ? `研究進度 +${Math.round(e.value*100)}%` : `Research +${Math.round(e.value*100)}%`;
+    else if (e.type === 'exp_gain') desc = currentLang==='zh' ? `實驗點數 +${Math.round(e.value*100)}%` : `Experiment points +${Math.round(e.value*100)}%`;
+    else if (e.type === 'water_loss_reduction') desc = currentLang==='zh' ? `耗水 -${Math.round(e.value*100)}%` : `Water loss -${Math.round(e.value*100)}%`;
+    else if (e.type === 'auto_tick_rate') desc = currentLang==='zh' ? `自動頻率 +${Math.round(e.value*100)}%` : `Auto rate +${Math.round(e.value*100)}%`;
+    else if (e.type === 'prestige_mult') desc = currentLang==='zh' ? `下一倍率 x${e.value.toFixed(2)}` : `Next multiplier x${e.value.toFixed(2)}`;
+    else if (e.type === 'softcap_relief') desc = currentLang==='zh' ? `軟封頂放鬆` : `Softcap relief`;
+    else if (e.type === 'offline_boost') desc = currentLang==='zh' ? `離線收益 +${Math.round(e.value*100)}%` : `Offline +${Math.round(e.value*100)}%`;
+    else if (e.type === 'rng_bonus') desc = currentLang==='zh' ? `隨機加成` : `Random bonus`;
+    const costLabel = langData[currentLang].costPts || '花費：';
+    const ptsName = currentLang === 'zh' ? '超越點數' : 'Transcend Points';
+    return `<b>${n}</b><br>${costLabel}${c} ${ptsName}<br>${desc}`;
+  }
+
+  // --- 拖曳輔助 ---
+  function makeDraggable(el, node){
+    let dragging = false;
+    let sx = 0, sy = 0, ox = 0, oy = 0;
+    el.onmousedown = function(ev){
+      dragging = true;
+      sx = ev.clientX; sy = ev.clientY; ox = node.x; oy = node.y;
+      ev.preventDefault();
+    };
+    window.addEventListener('mousemove', function(ev){
+      if (!dragging) return;
+      const dx = ev.clientX - sx; const dy = ev.clientY - sy;
+      node.x = Math.max(0, ox + dx); node.y = Math.max(0, oy + dy);
+      el.style.left = node.x + 'px';
+      el.style.top = node.y + 'px';
+      // 只更新連線，避免整棵樹重繪導致閃爍/消失
+      drawLines();
+      // 同步更新即時編號顯示
+      const ordered = [...treeSpec.nodes].sort((a,b) => (a.y - b.y) || (a.x - b.x));
+      const numbering = new Map();
+      ordered.forEach((n,i)=> numbering.set(n.id, i+1));
+      const ptsNameShort = 'TP';
+      document.querySelectorAll('.upgrade-node').forEach(nd => {
+        const nid = nd.dataset.nodeId;
+        const nodeObj = treeSpec.nodes.find(n=>n.id===nid);
+        if (nodeObj) nd.textContent = `${numbering.get(nid)}. ${nodeObj.name} (${nodeObj.cost}${ptsNameShort})`;
+      });
+    });
+    window.addEventListener('mouseup', function(){
+      if (!dragging) return;
+      dragging = false;
+      // 儲存位置
+      savedPositions[node.id] = { x: node.x, y: node.y };
+      localStorage.setItem('slab_tree_pos', JSON.stringify(savedPositions));
+    });
+  }
 
   // --- 彩蛋：滑過底部顯示 :) 並自動滾回頂部 ---
   let easterEggShown = false;
@@ -1387,6 +1527,37 @@ document.getElementById('realFormulaTab').onclick = function() {
   setFormulaTab('real');
 };
 
+// 兩分頁切換（溶解 / 升級樹）
+(function setupTabs(){
+  const tabMain = document.getElementById('tabMain');
+  const tabTree = document.getElementById('tabTree');
+  const mainPanel = document.getElementById('mainPanel');
+  const treePanel = document.getElementById('upgradeTreePanel');
+  function activate(tab) {
+    if (tab === 'main') {
+      mainPanel.style.display = '';
+      treePanel.style.display = 'none';
+      tabMain.style.borderColor = '#f7c873';
+      tabMain.style.color = '#f7c873';
+      tabTree.style.borderColor = '#7fd7d7';
+      tabTree.style.color = '#7fd7d7';
+    } else {
+      mainPanel.style.display = 'none';
+      treePanel.style.display = '';
+      tabMain.style.borderColor = '#7fd7d7';
+      tabMain.style.color = '#7fd7d7';
+      tabTree.style.borderColor = '#f7c873';
+      tabTree.style.color = '#f7c873';
+      renderTree();
+    }
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+  if (tabMain && tabTree) {
+    tabMain.onclick = () => activate('main');
+    tabTree.onclick = () => activate('tree');
+  }
+})();
+
 // --- 冷卻圈動畫 ---
 let cooldownTimer = null;
 function updateCooldownRing() {
@@ -1471,5 +1642,5 @@ setInterval(rotateQuote, 10000);
   };
 });
 </script>
-</div>
+</body>
 </html>
